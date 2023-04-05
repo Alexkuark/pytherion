@@ -93,6 +93,8 @@ def writecenterlineheader(file, entrance, settings, comments, data, coordsyst, c
 		writeheader_th(file, cavename, entrance)
 		
 	Author: Xavier Robert, Lima 2016/06/27
+	Modif : Phil Vernant Feb 2022
+	Modif : Alex Guizard Mar 2023
 	
 	"""
 	# First, define dictionaries to help the coding
@@ -173,11 +175,14 @@ def writecenterlineheader(file, entrance, settings, comments, data, coordsyst, c
 			file.write(u'\t\t#cs %s \n' 
 		               u'\t\t#fix %s %s %s %s \n\n' % (coordsyst, entrance, coordinates[0], coordinates[0], coordinates[0])) 
 	typem = u'Deca'
-	if u'Topof' not in settings:
-		settings [1:1]= u' '
-		typem = u'Topof'
-	if u'Prof' in settings or u'Deniv' in settings:
-		settings[4:4] = u' '
+	
+	# Moved that part in read_settings
+#	if u'Topof' not in settings:
+#		settings [1:1]= u' '
+#		typem = u'Topof'
+#	if u'Prof' in settings or u'Deniv' in settings:
+#		settings[4:4] = u' '
+		
 	# next line used to debug
 	#file.write(u'\t' + str(settings) + u'\n')
 	# write the survey caracteristics
@@ -189,12 +194,17 @@ def writecenterlineheader(file, entrance, settings, comments, data, coordsyst, c
 			elif thlang == u'en':
 				file.write(u'\t\t# If date is used, comment the ligne "declination", '
 				           u'the date will be use to compute it\n')
-	file.write(u'\t\tdeclination %s %s \n'% (str(settings[-2]), angleU[settings[2]]))
-	file.write(u'\t\t\tteam "G.S. Vulcain" \n')
-	file.write(u'\t\t\tteam "%s" \n' % club)
-	file.write(u'\t\t#explo-date YYYY.MM.DD \n')
-	file.write(u'\t\t\texplo-team "G.S. Vulcain" \n')
-	file.write(u'\t\t\texplo-team "%s" \n' % club)
+#	file.write(u'\t\tdeclination %s %s \n'% (str(settings[-2]), angleU[settings[2]]))
+#	file.write(u'\t\t\tteam "G.S. Vulcain" \n')
+#	file.write(u'\t\t\tteam "%s" \n' % club)
+#	file.write(u'\t\t#explo-date YYYY.MM.DD \n')
+#	file.write(u'\t\t\texplo-team "G.S. Vulcain" \n')
+#	file.write(u'\t\t\texplo-team "%s" \n' % club)
+	
+	file.write(u'\t\tdeclination %s %s \n'% (str([string for string in settings if '.' in string][0]), angleU[settings[2]]))
+	if club != None:
+		file.write(u'\t\tteam "%s" \n' % unidecode.unidecode(club))
+	
 	if icomments:
 		if thlang == u'en': file.write(u'\t\t# (to be completed, add many lines as you need) \n')
 		elif thlang == u'fr': file.write(u'\t\t# (peut être complété en ajoutant le nombre de lignes nécessaires) \n')
@@ -203,8 +213,9 @@ def writecenterlineheader(file, entrance, settings, comments, data, coordsyst, c
 	
 	file.write(u'\n\t\tunits length meters \n')
 	if u'Topof' in settings:
-		file.write(u'\t\tunits counter %smeters \n' % unitcounter[settings[3]])
-		file.write(u'\t\tcalibrate counter 0 %s \n' % settings[1])
+		#file.write(u'\t\tunits counter %smeters \n' % unitcounter[settings[3]])
+		#file.write(u'\t\tcalibrate counter 0 %s \n' % settings[1])
+		file.write(u'\t\tunits counter centimeters \n')
 		# To set the slope
 		if u'Vulc' in settings:
 			file.write(u'\t\tcalibrate clino 1 %s -1\n' % unitclino[settings[4]])
@@ -229,7 +240,95 @@ def writecenterlineheader(file, entrance, settings, comments, data, coordsyst, c
 	return
 
 
-def writedata(file, settings, data, dataold):
+def convertdata(settings, data, stations):
+	"""
+	function to convert the data from the .tro file to the .th file
+	
+	INPUTS:
+		settings : List of the settings of this survey section
+		data     : data from this survey section
+		stations : dictionnary of depth and LRUD of stations
+	   
+	OUTPUTS:
+		data     : data from this survey section in .th format
+		
+	USAGE:
+		convertdata(settings, data, stations)
+		
+	Author: Xavier Robert, Lima 2016/06/27
+	Modif : Phil Vernant Feb 2022
+		Alex Guizard Mar 2023
+	"""
+	#new version : use LRUD, Topof and prof (depth) from the station
+	# dictl = length of the data line
+	dictl = {u'Deca'  : 9,
+	         u'Topof' : 10}
+	
+	# if Prof values used in .tro file, convert depth to depthchange to avoid interleaved lines in .th file
+	dirs = settings[6].rstrip(u'\n\r').split(u',')
+
+	k = dictl[settings[0]]-4
+	i = 0
+	
+	for elems in data:
+		# remove the '*', and replace them with the right data !
+		if elems[0] == u'*': elems[0] = list(stations.keys())[-1] 
+		if elems[1] == u'*': elems[1] = u'-'
+		else:
+			if elems[1] in stations.keys(): del stations[elems[1]]
+			stations[elems[1]] = {
+				"depart": False
+			}
+		if u'Topof' in settings:
+			stations[elems[1]]["TopoF"] = elems[3]
+			if elems[2] == u'*':
+				elems[2] = stations[elems[0]]["TopoF"]
+
+		if u'Prof' in settings :
+			prof0 = 0.0
+			if elems[0] in stations.keys() and "prof" in stations[elems[0]].keys():
+				prof0 = stations[elems[0]]["prof"]
+			if elems[1] == u'-':
+				elems[4] = str(prof0) + ' ' + str(float(elems[4]))
+			else:
+				stations[elems[1]]["prof"] = float(elems[4])
+				elems[4] = str(prof0) + ' ' + str(stations[elems[1]]["prof"])
+
+		elif u'Deniv' in settings and u'Inv' in dirs[1] : 
+		
+			elems[4] = str(-float(elems[4]))
+
+		if elems[1] != u'-' and elems[dictl[settings[0]]-4] == u'*' and elems[dictl[settings[0]]-3] == u'*' and elems[dictl[settings[0]]-2] == u'*' and elems[dictl[settings[0]]-1] == u'*' :
+			elems[dictl[settings[0]]-4] = u'0.5'
+			elems[dictl[settings[0]]-3] = u'0.5'
+			elems[dictl[settings[0]]-2] = u'0.5'
+			elems[dictl[settings[0]]-1] = u'0.5'
+		else:
+			
+			for j in range(4) :
+				# Check that LRUD == '*'
+				if elems[k+j] == u'*':
+					# If LRUD is known
+					if elems[1] == u'-' and elems[0] in stations.keys(): elems[k+j] = stations[elems[0]]["LRUD"][j]
+					#elif "LRUD" in stations[elems[1]].keys() : elems[k+j] = stations[elems[1]]["LRUD"][j]
+					#Else, change them to 0
+					else: elems[k+j] = u'0.0'
+		
+		if elems[1] != u'-':
+			stations[elems[1]]["LRUD"] = elems[k:dictl[settings[0]]]
+			if elems[0] in stations.keys() and stations[elems[0]]["depart"]:
+			
+				for j in range(4) :
+					elems[k+j] = '['+stations[elems[0]]["LRUD"][j]+' '+elems[k+j]+']'
+
+		if 	elems[0] == elems[1] :
+			stations[elems[1]]["depart"] = True
+			# remove duplicates of entrance station used by visualtopo for LRUD purpose
+			del elems[:]
+
+	return data, stations
+	
+def writedata(file, settings, data):
 	"""
 	function to write the data in the .th file
 	
@@ -249,22 +348,12 @@ def writedata(file, settings, data, dataold):
 	
 	"""
 	
+	
 	# dictl = length of the data line
 	dictl = {u'Deca'  : 9,
 	         u'Topof' : 10}
-	
-	i=0
-	for elems in data:
-		for k in [0,2]:
-			if elems[k] == u'*':
-				# remove the '*', and replace them with the right data !
-				if i == 0: elems[k] = dataold[len(dataold)-1][k+1]
-				else: elems[k] = data[i-1][k+1]
-		if 	elems[0] == elems[1]: elems[1] = elems[1] + u'd'
-		for k in range (dictl[settings[0]]-4, dictl[settings[0]]):
-			# Check that LRUD != '*'; If yes, change them to 0
-			if elems[k] == u'*': elems[k] = u'0'
-		
+
+	for i, elems in enumerate(data):
 		# Check if option 'E'
 		if u'E' in elems:
 			file.write(u'\t\t\tflags duplicate \n')
@@ -281,13 +370,13 @@ def writedata(file, settings, data, dataold):
 				file.write(u'\n')
 		else:
 			file.write(u'\n')
-		if 	elems[(dictl[settings[0]])] == u'I':
+		if u'I' in elems:
 			file.write(u'\t\t\textend reverse \n')
 		if u'E' in elems:
 			file.write(u'\t\t\tflags not duplicate \n')	
-		i+=1
 				
 	return
+	
 
 def write_thtot(file, cavename = u'cave', icomments = True, thlang = 'en'):
 	"""
