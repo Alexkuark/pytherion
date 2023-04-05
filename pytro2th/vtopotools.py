@@ -53,6 +53,8 @@ def read_vtopo_header(lines):
 			cavename, coordinates, coordsyst, club, entrance, versionfle = read_vtopo_header(lines)
 				
 		Author: Xavier Robert, Lima 2016/06/27
+		modif : Phil Vernant 2022/02/08
+		modif : Alex Guizard 2023/04/05
 		
 		Licence: CCby-nc
 	"""
@@ -61,8 +63,19 @@ def read_vtopo_header(lines):
 	#             file in the therion source distribution. You can add your own lines/systems
 	coord_dict = {u'LT1' : u'EPSG:27571',
 	             u'LT2' : u'EPSG:27572',
+	             u'LT2E' : u'EPSG:27572',
 	             u'LT3' : u'EPSG:27573',
-	             u'LT4' : u'EPSG:27574'
+	             u'LT4' : u'EPSG:27574',
+	             u'LT72' : u'EPSG:31370',
+	             u'LT9' : u'EPSG:2154',
+	             u'LT93' : u'EPSG:2154',
+	             u'SWISS' : u'EPSG:2056',
+	             u'UTM30' : u'EPSG:32630',
+	             u'UTM31' : u'EPSG:32631',
+	             u'UTM32' : u'EPSG:32632',
+	             u'UTM30E' : u'EPSG:23030',
+	             u'UTM31E' : u'EPSG:23031',
+	             u'UTM32E' : u'EPSG:23032'
 	             }
 	for line in lines:
 		if u"Version" in line:
@@ -76,10 +89,20 @@ def read_vtopo_header(lines):
 		# read entrance name
 		if u'Entree' in line : entrance = line[7:].replace(u'\n', u'')
 	
-	if coordtro[:3] in coord_dict:
+	if coordtro in coord_dict:
 		# Rewrite the coordinate system to be read by Therion
 		# French Lambert system. To find number of your system, see extern/proj4/nad/epsg file in the therion source distribution. You can add you own lines/systems
-		coordsyst = coord_dict[coordtro[0:3]]
+		#coordsyst = coord_dict[coordtro]
+		coordsyst = "EPSG:3857"
+		transformer = Transformer.from_crs(coord_dict[coordtro], coordsyst)
+		# make sure the coordinates are in meters
+		if float(xcoord) < 20000 :
+			xcoord = float(coordinates[0])*1000
+			ycoord = float(coordinates[1])*1000
+
+		xcoord, ycoord = transformer.transform(xcoord, ycoord)
+		
+		coordinates = [xcoord, ycoord, alt]
 	else:
 		coordsyst = None
 	
@@ -103,6 +126,7 @@ def read_settings(line):
 			settings, comments = read_settings(line)
 			          
 		Author: Xavier Robert, Lima 2016/06/27
+		Modif : Alex Guizard Mar 2022
 		
 		Licence: CCby-nc
 	"""
@@ -118,6 +142,11 @@ def read_settings(line):
 	#commentst = param[k+2:]
 	commentst = param[k:]
 	comments = " ".join(str(elem)  for elem in commentst)
+	
+	if u'Topof' not in settings:             
+		settings [1:1]= u' '
+	if u'Prof' in settings or u'Deniv' in settings:
+		settings[4:4] = u' '
 	
 	#ucomments=comments.decode('us-ascii', errors = 'replace')
 	#print ucomments
