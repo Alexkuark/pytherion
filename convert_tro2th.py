@@ -1,7 +1,7 @@
 #!/usr/bin/env python3
 # -*- coding: utf-8 -*-
 
-from tro2th import *
+from pytro2th import tro2th
 import subprocess
 from os import listdir
 from os.path import isfile, isdir
