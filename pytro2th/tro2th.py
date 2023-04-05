@@ -14,8 +14,10 @@
 	!           Code to transform the .tro files              !
 	!            Visual Topo into files that can              !
 	!                  be used by Therion                     !
-	!                                                         !
-	!              Written by Xavier Robert                   !
+	!               					  !
+	!		OSU OREME				  !
+	!		by Philippe Vernant, Alexis Guizard	  !
+	!              From pytherion by Xavier Robert            !
 	!                                                         !
 	!---------------------------------------------------------!
 
@@ -34,6 +36,7 @@
 from __future__ import division
 #from __future__ import unicode_literals
 import sys, os, wget
+from pyproj import Transformer
 
 # Import Python modules
 #modulesNames = ['sys', 'warnings']
@@ -153,9 +156,9 @@ def tro2th(fle_tro_fnme = None, fle_th_fnme = None,
 	                      u'       Use "en" instead' % thlang )
 	print(u'____________________________________________________________\n\n\t\tTRO 2 THERION\n____________________________________________________________\n')
 	if thlang == u'fr':
-		print(u'\nEcrit par Xavier Robert, Groupe spéléo Vulcain - Lyon, France\n')
+		print(u'\nPhilippe Vernant, Alexis Guizard, OSU OREME - Montpellier, France\nEcrit par Xavier Robert, Groupe spéléo Vulcain - Lyon, France\n')
 	elif thlang == u'en':
-		print(u'\nWritten by Xavier Robert, Groupe spéléo Vulcain - Lyon, France\n')
+		print(u'\nPhilippe Vernant, Alexis Guizard, OSU OREME - Montpellier, France\nWritten by Xavier Robert, Groupe spéléo Vulcain - Lyon, France\n')
 	print(u'____________________________________________________________\n\n')
 	
 	coordsyst = None
@@ -264,7 +267,7 @@ def tro2th(fle_tro_fnme = None, fle_th_fnme = None,
 	print(u'____________________________________________________________')
 	print(u'')
 	
-	return
+	return fle_th_fnme, thconfigfnme
 
 
 def build_structure(cavename, Errorfiles = True):
@@ -378,6 +381,8 @@ def convert_tro(fle_tro_fnme, fle_th_fnme = None, cavename = None,
 			          fle_th_fnme, cavename and Errorfiles can be ommitted.
 		
 		Author: Xavier Robert, Lima 2016/06/27
+		Modif : Phil Vernant, 2022/02/16
+		Modif : Alex Guizard, 2023/04/05
 		
 		Licence: CCby-nc
 	"""
@@ -404,7 +409,7 @@ def convert_tro(fle_tro_fnme, fle_th_fnme = None, cavename = None,
 	cavename, coordinates, coordsyst, club, entrance, versionfle = read_vtopo_header(lines)
 	
 	if cavename is None or cavename == '' or cavename == ' ':
-		cavename = u'cave'
+		cavename = fle_tro_fnme.replace(u'.tro', u'')
 	
 	if fle_th_fnme is None:
 		fle_th_fnme = cavename.replace(u' ', u'_') + u'.th'
@@ -428,7 +433,7 @@ def convert_tro(fle_tro_fnme, fle_th_fnme = None, cavename = None,
 	# initiate variables
 	i = 0
 	iline = []
-	dataold = []
+	stations = {}
 	
 	# get line numbers of the lines beginning with 'Param'
 	for line in lines:
@@ -442,16 +447,19 @@ def convert_tro(fle_tro_fnme, fle_th_fnme = None, cavename = None,
 		# read the data from the tro file
 		data = read_data(lines, settings, j, iline)
 		
-		# write centerline header
-		writecenterlineheader(fle_th, entrance, settings, comments, data, coordsyst, coordinates, club,
-		                      icomments, thlang)
-
-		# write the data to the .th file
-		writedata(fle_th, settings, data, dataold)
+		data, stations = convertdata(settings, data, stations)
 		
-		# write the end of the centerline in the .th file
-		fle_th.write(u'\n\tendcenterline\n\n')
-		dataold = data	
+		if len(data) > 0:
+			# write centerline header
+			writecenterlineheader(fle_th, entrance, settings, comments, data, coordsyst, coordinates, club,
+					      icomments, thlang)
+
+			# write the data to the .th file
+			writedata(fle_th, settings, data)
+
+			# write the end of the centerline in the .th file
+			fle_th.write(u'\n\tendcenterline\n\n')
+	
 	# write the end of the survey in the .th file
 	fle_th.write(u'\nendsurvey\n')
 	fle_th.close
