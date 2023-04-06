@@ -130,8 +130,8 @@ def writethconfig(pdata, icomments, icoupe, thlang, dictcave,
 	f2w = open(pdata, 'w')
 	
 	f2w.write(u'encoding utf-8 \n\n')
-	f2w.write(u'# File written by pytro2th (Xavier Robert)  \n')
-	f2w.write(u'# Copyright (C) %s Xavier Robert <xavier.robert***@***ird.fr> \n' %(str(datetime.datetime.now().year)))
+	f2w.write(u'# File written by pytro2th (OSU OREME)  \n')
+	f2w.write(u'# Copyright (C) %s Xavier Robert <xavier.robert***@***ird.fr>, Philippe Vernant <philippe.vernant***@***umontpellier.fr>, Alexis Guizard <guizard.alexis***@***outlook.com> \n' %(str(datetime.datetime.now().year)))
 	f2w.write(u'# This work is under the licence Creatice Commonc CC-by-nc-sa v.4 \n\n')
   
   
