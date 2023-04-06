@@ -284,15 +284,16 @@ def convertdata(settings, data, stations):
 			if elems[2] == u'*':
 				elems[2] = stations[elems[0]]["TopoF"]
 
-		if u'Prof' in settings :
-			prof0 = 0.0
-			if elems[0] in stations.keys() and "prof" in stations[elems[0]].keys():
-				prof0 = stations[elems[0]]["prof"]
-			if elems[1] == u'-':
-				elems[4] = str(prof0) + ' ' + str(float(elems[4]))
-			else:
-				stations[elems[1]]["prof"] = float(elems[4])
-				elems[4] = str(prof0) + ' ' + str(stations[elems[1]]["prof"])
+		#depth to depth case
+#		if u'Prof' in settings :
+#			prof0 = 0.0
+#			if elems[0] in stations.keys() and "prof" in stations[elems[0]].keys():
+#				prof0 = stations[elems[0]]["prof"]
+#			if elems[1] == u'-':
+#				elems[4] = str(prof0) + ' ' + str(float(elems[4]))
+#			else:
+#				stations[elems[1]]["prof"] = float(elems[4])
+#				elems[4] = str(prof0) + ' ' + str(stations[elems[1]]["prof"])
 
 		elif u'Deniv' in settings and u'Inv' in dirs[1] : 
 		
