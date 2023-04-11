@@ -86,9 +86,9 @@ def read_vtopo_header(lines):
 	versionfle = None
 	
 	for line in lines:
-		if u"Version" in line:
+		if u"Version" in line[0:7]:
 			versionfle = line[1].replace(u'\n', u'').rstrip(u'\n\r').split(' ')
-		if u'Trou' in line:
+		if u'Trou' in line[0:4]:
 			# read Trou
 			(cavename, xcoord, ycoord, alt, coordtro) = line[5:].replace(u'\n', u'').rstrip(u'\n\r').split(u',')
 			coordinates = [xcoord, ycoord, alt]
