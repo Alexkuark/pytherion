@@ -203,7 +203,7 @@ def writecenterlineheader(file, entrance, settings, comments, data, coordsyst, c
 	
 	file.write(u'\t\tdeclination %s %s \n'% (str([string for string in settings if '.' in string][0]), angleU[settings[2]]))
 	if club != None:
-		file.write(u'\t\tteam "%s" \n' % unidecode.unidecode(club))
+		file.write(u'\t\tteam "%s" \n' % club)
 	
 	if icomments:
 		if thlang == u'en': file.write(u'\t\t# (to be completed, add many lines as you need) \n')
