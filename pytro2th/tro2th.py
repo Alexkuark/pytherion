@@ -398,7 +398,7 @@ def convert_tro(fle_tro_fnme, fle_th_fnme = None, cavename = None,
 	if thlang == u'fr': print(u'\tTravail sur %s' % fle_tro_fnme)
 	elif thlang == u'en':print(u'\tProcessing %s' % fle_tro_fnme)
 	print(' ')
-	fle_tro = open(fle_tro_fnme, 'rU')
+	fle_tro = open(fle_tro_fnme, mode='rU', encoding='ISO-8859-1')
 	# read the .tro file
 	lines = fle_tro.readlines()
 	# change the encoding
