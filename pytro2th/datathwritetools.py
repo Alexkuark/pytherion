@@ -170,10 +170,10 @@ def writecenterlineheader(file, entrance, settings, comments, data, coordsyst, c
 				           u' copy in the corresponding centerline the next 2 lines: \n')
 		if coordsyst != None:
 			file.write(u'\t\tcs %s \n' 
-		               u'\t\tfix %s %s %s %s \n\n' % (coordsyst, entrance, coordinates[0], coordinates[0], coordinates[0])) 
+		               u'\t\tfix %s %s %s %s \n\n' % (coordsyst, entrance, coordinates[0], coordinates[1], coordinates[2])) 
 		else:
 			file.write(u'\t\t#cs %s \n' 
-		               u'\t\t#fix %s %s %s %s \n\n' % (coordsyst, entrance, coordinates[0], coordinates[0], coordinates[0])) 
+		               u'\t\t#fix %s %s %s %s \n\n' % (coordsyst, entrance, coordinates[0], coordinates[1], coordinates[2])) 
 	typem = u'Deca'
 	
 	# Moved that part in read_settings
