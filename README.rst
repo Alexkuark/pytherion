@@ -5,12 +5,6 @@ This module is designed for cavers who need to convert cave's surveys from the V
 to the Therion software. It provides functions to read Visual Topo files (*.tro) and to write Therion files
 (*.th, *.thconfig and config.thc)
 
-WARNINGS
---------
-
-This code crashes because of a problem of encoding reading when used with Visual Topo files which contain accentuated characters !!!
-For the moment, I did not manage to solve that problem...
-
 Install
 -------
 
