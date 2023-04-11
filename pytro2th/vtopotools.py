@@ -32,7 +32,6 @@ from __future__ import  division
 # Import modules
 import sys, os
 import numpy as np
-from pyproj import Transformer
 
 ############################################################################
 def read_vtopo_header(lines):
@@ -93,17 +92,7 @@ def read_vtopo_header(lines):
 	if coordtro in coord_dict:
 		# Rewrite the coordinate system to be read by Therion
 		# French Lambert system. To find number of your system, see extern/proj4/nad/epsg file in the therion source distribution. You can add you own lines/systems
-		#coordsyst = coord_dict[coordtro]
-		coordsyst = "EPSG:3857"
-		transformer = Transformer.from_crs(coord_dict[coordtro], coordsyst)
-		# make sure the coordinates are in meters
-		if float(xcoord) < 20000 :
-			xcoord = float(coordinates[0])*1000
-			ycoord = float(coordinates[1])*1000
-
-		xcoord, ycoord = transformer.transform(xcoord, ycoord)
-		
-		coordinates = [xcoord, ycoord, alt]
+		coordsyst = coord_dict[coordtro]
 	else:
 		coordsyst = None
 	
