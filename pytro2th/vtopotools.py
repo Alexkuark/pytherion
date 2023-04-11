@@ -77,6 +77,7 @@ def read_vtopo_header(lines):
 	             u'UTM31E' : u'EPSG:23031',
 	             u'UTM32E' : u'EPSG:23032'
 	             }
+	
 	cavename = ''
 	coordinates = [0.0, 0.0, 0.0]
 	coordsyst = None
@@ -92,7 +93,7 @@ def read_vtopo_header(lines):
 			(cavename, xcoord, ycoord, alt, coordtro) = line[5:].replace(u'\n', u'').rstrip(u'\n\r').split(u',')
 			coordinates = [xcoord, ycoord, alt]
 			
-			if coordtro in coord_dict:
+			if coordtro in coord_dict and (float(xcoord) != 0.0 or float(ycoord) != 0.0):
 				# Rewrite the coordinate system to be read by Therion
 				# French Lambert system. To find number of your system, see extern/proj4/nad/epsg file in the therion source distribution. You can add you own lines/systems
 				coordsyst = coord_dict[coordtro]
