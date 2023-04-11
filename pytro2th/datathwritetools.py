@@ -563,8 +563,8 @@ def write_thcoords(file, cavename = u'cave', coordinates = None, coordsyst = Non
 			outProj = Proj('epsg:3857')
 			latc, longc = transform(inProj, outProj, float(coordinates[0]), float(coordinates[1]))
 		else:
-			latc = coordinates[1] + u'(Check coord. syst.)'
-			longc = coordinates[0] + u'(Check coord. syst.)'
+			latc = str(coordinates[1]) + u'(Check coord. syst.)'
+			longc = str(coordinates[0]) + u'(Check coord. syst.)'
 		altc = coordinates[2]
 	else:
 		latc = u'None'
