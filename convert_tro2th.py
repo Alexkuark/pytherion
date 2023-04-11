@@ -3,6 +3,7 @@
 
 from pytro2th import tro2th
 import subprocess
+import sys
 from os import listdir
 from os.path import isfile, isdir
 
