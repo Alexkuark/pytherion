@@ -59,7 +59,7 @@ def writeheader_th(file, cavename, entrance):
 	"""
 	
 	file.write(u'encoding utf-8 \n\nsurvey %s -title "%s" -entrance "%s" \n'
-	           %(cavename.replace(u' ', u'_'), cavename, entrance))
+	           %(cavename.replace(u' ', u'_').replace(u'(', u'').replace(u')', u''), cavename, entrance))
 	
 	return
 
@@ -417,7 +417,7 @@ def write_thtot(file, cavename = u'cave', icomments = True, thlang = 'en'):
 			file.write(u'# This work is under the Creative Commons Attribution-ShareAlike-NonCommecial License:\n')
 			file.write(u'#	<http://creativecommons.org/licenses/by-nc-sa/4.0/>\n\n') 
  
-	file.write(u'survey %s -title "%s"\n\n' %(cavename.replace(u' ', u'_'), cavename.replace(u' ', u'_')))
+	file.write(u'survey %s -title "%s"\n\n' %(cavename.replace(u' ', u'_').replace(u'(', u'').replace(u')', u''), cavename.replace(u' ', u'_')))
 
 	if icomments:
 		if thlang == u'fr':
