@@ -225,8 +225,8 @@ def writethconfig(pdata, icomments, icoupe, thlang, dictcave,
 	if icomments: 
 		if thlang == u'fr': f2w.write(u'# Séléction des maps à exporter  \n')
 		elif thlang == u'en': f2w.write(u'# Select maps to export  \n')
-	f2w.write(u'select MP-'+ dictcave[3] + u'#@' + dictcave[3] +' \n')
-	if icoupe: f2w.write(u'select MC-'+ dictcave[3] + u'#@' + dictcave[3] +' \n')
+	f2w.write(u'select MP-'+ dictcave[3].replace(u' ', u'_') + u'#@' + dictcave[3].replace(u' ', u'_') +' \n')
+	if icoupe: f2w.write(u'select MC-'+ dictcave[3].replace(u' ', u'_') + u'#@' + dictcave[3].replace(u' ', u'_') +' \n')
 
 	if icomments: 
 		if thlang == u'fr': f2w.write(u'# Export des pdfs  \n')
