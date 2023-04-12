@@ -30,9 +30,7 @@ else:
     for f in listdir():
         if (isfile(f) and f[-4:] == '.tro'):
             print('\n\t\tProcessing : '+f+'\n')
-            tro2th (fle_tro_fnme = f)
-
-    for f in listdir():
-        if (isfile(f) and f[-9:] == '.thconfig'):
-            print('\n\t\tProcessing : '+f+'\n')
-            subprocess.run(['therion', f])
+            th, thconf = tro2th (fle_tro_fnme = f)
+            
+            print('\n\t\tProcessing : '+thconf+'\n')
+            subprocess.run(['therion', thconf])
