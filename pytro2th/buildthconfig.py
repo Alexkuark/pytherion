@@ -218,8 +218,8 @@ def writethconfig(pdata, icomments, icoupe, thlang, dictcave,
 	if icomments: 
 		if thlang == u'fr': f2w.write(u'# Export des xvi pour le dessin \n')
 		elif thlang == u'en': f2w.write(u'# xvi exports for drawing purpose \n')
-	f2w.write(u'export map -fmt xvi -layout xviexport -o '+ dictcave[3] + u'-map.xvi\n')
-	if icoupe: f2w.write(u'export map -projection extended -fmt xvi -layout xviexport -o '+ dictcave[3] + u'-coupe.xvi\n\n')
+	f2w.write(u'export map -fmt xvi -layout xviexport -o '+ dictcave[3].replace(u' ', u'_') + u'-map.xvi\n')
+	if icoupe: f2w.write(u'export map -projection extended -fmt xvi -layout xviexport -o '+ dictcave[3].replace(u' ', u'_') + u'-coupe.xvi\n\n')
 
 	# select maps
 	if icomments: 
@@ -231,30 +231,30 @@ def writethconfig(pdata, icomments, icoupe, thlang, dictcave,
 	if icomments: 
 		if thlang == u'fr': f2w.write(u'# Export des pdfs  \n')
 		elif thlang == u'en': f2w.write(u'# Pdfs export  \n')
-	if icoupe: f2w.write(u'export map -projection extended -layout my_layout-coupe -o '+ dictcave[3] + u'-coupe.pdf\n')
-	f2w.write(u'export map -o Outputs/' + dictcave[3] + u'-plan.pdf -layout my_layout\n')
+	if icoupe: f2w.write(u'export map -projection extended -layout my_layout-coupe -o '+ dictcave[3].replace(u' ', u'_') + u'-coupe.pdf\n')
+	f2w.write(u'export map -o Outputs/' + dictcave[3].replace(u' ', u'_') + u'-plan.pdf -layout my_layout\n')
 	
 	if icomments: 
 		if thlang == u'fr': f2w.write(u'# Export du modèle 3D  \n')
 		elif thlang == u'en': f2w.write(u'# 3D export  \n')
-	f2w.write(u'export model -o Outputs/' + dictcave[3] + u'.lox\n\n')
+	f2w.write(u'export model -o Outputs/' + dictcave[3].replace(u' ', u'_') + u'.lox\n\n')
  
 	if icomments: 
 		if thlang == u'fr': f2w.write(u'# Export des fichier ESRI  \n')
 		elif thlang == u'en': f2w.write(u"# ESRI's files export  \n")
-	f2w.write(u'export map -proj plan -fmt esri -o Outputs/' + dictcave[3] + u' -layout my_layout\n')
+	f2w.write(u'export map -proj plan -fmt esri -o Outputs/' + dictcave[3].replace(u' ', u'_') + u' -layout my_layout\n')
  
 	if icomments: 
 		if thlang == u'fr': f2w.write(u'# Export du fichier kml  \n')
 		elif thlang == u'en': f2w.write(u'# kml export  \n')
-	f2w.write(u'export map -proj plan -fmt kml -o Outputs/' + dictcave[3] + u'.kml -layout my_layout\n\n')
+	f2w.write(u'export map -proj plan -fmt kml -o Outputs/' + dictcave[3].replace(u' ', u'_') + u'.kml -layout my_layout\n\n')
 
 	if icomments: 
 		if thlang == u'fr': f2w.write(u'# Export des listes  \n')
 		elif thlang == u'en': f2w.write(u'# Lists export  \n')
-	f2w.write(u'export continuation-list -o Outputs/Continuations' + dictcave[3] + '.html \n')
-	f2w.write(u'export survey-list -location on -o Outputs/Surveys' + dictcave[3] + '.html \n')
-	f2w.write(u'export cave-list -location on -o Outputs/Caves2020' + dictcave[3] + '.html \n')
+	f2w.write(u'export continuation-list -o Outputs/Continuations' + dictcave[3].replace(u' ', u'_') + '.html \n')
+	f2w.write(u'export survey-list -location on -o Outputs/Surveys' + dictcave[3].replace(u' ', u'_') + '.html \n')
+	f2w.write(u'export cave-list -location on -o Outputs/Caves2020' + dictcave[3].replace(u' ', u'_') + '.html \n')
 
 	
 	f2w.closed
