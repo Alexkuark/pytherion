@@ -246,7 +246,7 @@ def tro2th(fle_tro_fnme = None, fle_th_fnme = None,
 			thcfnme = thcfnme
 			writethconfig(thconfigfnme, icomments, icoupe, thlang,
 			              dictcave,
-		                  ithc, cavename.replace(u' ', u'_') + u'/config.thc')
+		                  ithc, thcfnme)
 
 	if istructure: 
 		# build cavename-tot.th file
