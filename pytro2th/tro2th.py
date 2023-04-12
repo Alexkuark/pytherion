@@ -227,21 +227,24 @@ def tro2th(fle_tro_fnme = None, fle_th_fnme = None,
 				writethc(thcfnme, cavename, istructure)
 	
 	# build thconfig file
-	# Needs to be change to take in account istructure
 	if ithconfig :
 		# write the file
 		if thconfigfnme is None or thconfigfnme == u'' or thconfigfnme == u' ':
 			if fle_th_fnme is None:	thconfigfnme = cavename.replace(u' ', u'_') + u'.thconfig'
-			else: thconfigfnme = fle_th_fnme[0:-3] + u'.thconfig'
+			else: thconfigfnme = fle_th_fnme + u'config'
+		
+		#take in account istructure
+		if istructure:
+			thconfigfnme = cavename.replace(u' ', u'_') + '/' + thconfigfnme
 		
 		if thcpath is not None: 
 			thcfnme = thcpath + thcfnme
-			writethconfig(cavename.replace(u' ', u'_') + thconfigfnme, icomments, icoupe, thlang,
+			writethconfig(thconfigfnme, icomments, icoupe, thlang,
 			              dictcave,
 		                  ithc, thcfnme)
 		else:
 			thcfnme = thcfnme
-			writethconfig(cavename.replace(u' ', u'_') + thconfigfnme, icomments, icoupe, thlang,
+			writethconfig(thconfigfnme, icomments, icoupe, thlang,
 			              dictcave,
 		                  ithc, cavename.replace(u' ', u'_') + u'/config.thc')
 
