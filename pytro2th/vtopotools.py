@@ -101,7 +101,11 @@ def read_vtopo_header(lines):
 				coordsyst = None
 			
 		# read club
-		if u'Club' in line: club = line[5:].replace(u'\n', u'')
+#		if u'Club' in line: club = line[5:].replace(u'\n', u'')
+		if u'Club' in line: 
+			if len(line[5:].replace(u'\n', u'').split(u' ')) < 3 : club = line[5:].replace(u'\n', u'')
+			else: club = line[5:].replace(u'\n', u'').replace(u' ', u'-')
+				
 		# read entrance name
 		if u'Entree' in line : entrance = line[7:].replace(u'\n', u'')
 
