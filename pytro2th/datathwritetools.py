@@ -148,7 +148,7 @@ def writecenterlineheader(file, entrance, settings, comments, data, coordsyst, c
 	slopesurv = {u'Clino' : u'clino',
 	             u'Vulc'  : u'clino',
 	             u'Deniv' : u'depthchange',
-	             u'Prof'  : u'depth'}	
+	             u'Prof'  : u'fromdepth todepth'}
     
     # Begin the centerline
 	file.write(u'\n\tcenterline \n')
@@ -295,15 +295,15 @@ def convertdata(settings, data, stations):
 				elems[2] = stations[elems[0]]["TopoF"]
 
 		#depth to depth case
-#		if u'Prof' in settings :
-#			prof0 = 0.0
-#			if elems[0] in stations.keys() and "prof" in stations[elems[0]].keys():
-#				prof0 = stations[elems[0]]["prof"]
-#			if elems[1] == u'-':
-#				elems[4] = str(prof0) + ' ' + str(float(elems[4]))
-#			else:
-#				stations[elems[1]]["prof"] = float(elems[4])
-#				elems[4] = str(prof0) + ' ' + str(stations[elems[1]]["prof"])
+		if u'Prof' in settings :
+			prof0 = 0.0
+			if elems[0] in stations.keys() and "prof" in stations[elems[0]].keys():
+				prof0 = stations[elems[0]]["prof"]
+			if elems[1] == u'-':
+				elems[4] = str(prof0) + ' ' + str(float(elems[4]))
+			else:
+				stations[elems[1]]["prof"] = float(elems[4])
+				elems[4] = str(prof0) + ' ' + str(stations[elems[1]]["prof"])
 
 		elif u'Deniv' in settings and u'Inv' in dirs[1] : 
 		
@@ -467,19 +467,29 @@ def write_thtot(file, cavename = u'cave', icomments = True, thlang = 'en'):
 		if thlang == u'fr': file.write(u'## Pour le plan\n')
 		elif thlang == u'en': file.write(u'## For plan view\n')
 	
-	file.write(u'input Data/%s.th2\n\n' %(cavename.replace(u' ', u'_')))
+	if os.path.isfile(u'Data/%s.th2\n\n' %(cavename.replace(u' ', u'_'))):
+		file.write(u'input Data/%s.th2\n\n' %(cavename.replace(u' ', u'_')))
+	else:
+		file.write(u'#input Data/%s.th2\n\n' %(cavename.replace(u' ', u'_')))
 
 	if icomments:
 		if thlang == u'fr': file.write(u'## Pour la coupe développée\n')
 		elif thlang == u'en': file.write(u'## For extended elevation\n')
 
-	file.write(u'input Data/%s-coupe.th2\n\n' %(cavename.replace(u' ', u'_')))
+	if os.path.isfile(u'Data/%s-coupe.th2\n\n' %(cavename.replace(u' ', u'_'))):
+		file.write(u'input Data/%s-coupe.th2\n\n' %(cavename.replace(u' ', u'_')))
+	else:
+		file.write(u'#input Data/%s-coupe.th2\n\n' %(cavename.replace(u' ', u'_')))
 
 	if icomments:
 		if thlang == u'fr': file.write(u'## Appel des maps\n')
 		elif thlang == u'en': file.write(u'## Call the maps file\n')
 
-	file.write(u'input %s-maps.th\n\n' %(cavename.replace(u' ', u'_')))
+	if os.path.isfile(u'Data/%s.th2\n\n' %(cavename.replace(u' ', u'_'))) and os.path.isfile(u'Data/%s-coupe.th2\n\n' %(cavename.replace(u' ', u'_'))):
+		file.write(u'input %s-maps.th\n\n' %(cavename.replace(u' ', u'_')))
+	else:
+		file.write(u'#input %s-maps.th\n\n' %(cavename.replace(u' ', u'_')))
+	
 	file.write(u'endsurvey\n')
 
 	return
