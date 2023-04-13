@@ -207,10 +207,36 @@ def writethconfig(pdata, icomments, icoupe, thlang, dictcave,
 		elif thlang == u'en': f2w.write(u'# End of the definition of the layout "xviexport"  \n')
 	f2w.write(u'\n\n')
 	
-	writelayout(f2w, dictcave, icomments, thlang)
-	if icoupe:
-		f2w.write(u'\n\n')
-		writelayout(f2w, dictcave, icomments, thlang, icoupe)
+	# write a simple layout for the map and the profile
+	f2w.write(u'layout base\n')
+	f2w.write(u'\tdoc-title "' + str(dictcave[3]) + '"\n')
+	if str(dictcave[4]) != 'None':
+		f2w.write(u'\tcs ' + str(dictcave[4]) + ' \n')
+	else:
+		f2w.write(u'\t#cs ' + str(dictcave[4]) + ' \n')
+	f2w.write(u'\tbase-scale 1 ' + str(dictcave[1]) + '\n')
+	f2w.write(u'\tscale 1 ' + str(dictcave[5]) + u'\n')
+	f2w.write(u'\t#color map-bg 100\n')
+	f2w.write(u'\ttransparency on\n')
+	f2w.write(u'\topacity 75\n')
+	f2w.write(u'\tlegend on\n')
+	f2w.write(u'\tmap-header 100 100 nw\n')
+	f2w.write(u'\tsymbol-show line survey\n')
+	f2w.write(u'\tsymbol-show point station\n')
+	f2w.write(u'\tdebug station-names\n')
+	f2w.write(u'\tgrid bottom\n')
+	f2w.write(u'\tgrid-size 100 100 20 m\n')
+	f2w.write(u'endlayout\n')
+	
+	layout = 'base'
+	layoutcoupe = 'base'
+	if os.path.isfile(u'Data/%s.th2\n\n' %(dictcave[3].replace(u' ', u'_'))) and os.path.isfile(u'Data/%s-coupe.th2\n\n' %(dictcave[3].replace(u' ', u'_'))):
+		layout ='my_layout'
+		layoutcoupe = 'my_layout-coupe'
+		writelayout(f2w, dictcave, icomments, thlang)
+		if icoupe:
+			f2w.write(u'\n\n')
+			writelayout(f2w, dictcave, icomments, thlang, icoupe)
 	
 	f2w.write(u'\n\n')
 	f2w.write(u'# 3-EXPORTS   \n')
@@ -231,8 +257,8 @@ def writethconfig(pdata, icomments, icoupe, thlang, dictcave,
 	if icomments: 
 		if thlang == u'fr': f2w.write(u'# Export des pdfs  \n')
 		elif thlang == u'en': f2w.write(u'# Pdfs export  \n')
-	if icoupe: f2w.write(u'export map -projection extended -layout my_layout-coupe -o '+ dictcave[3].replace(u' ', u'_') + u'-coupe.pdf\n')
-	f2w.write(u'export map -o Outputs/' + dictcave[3].replace(u' ', u'_') + u'-plan.pdf -layout my_layout\n')
+	if icoupe: f2w.write(u'export map -projection extended -layout ' + layoutcoupe + ' -o '+ dictcave[3].replace(u' ', u'_') + u'-coupe.pdf\n')
+	f2w.write(u'export map -o Outputs/' + dictcave[3].replace(u' ', u'_') + u'-plan.pdf -layout ' + layout + '\n')
 	
 	if icomments: 
 		if thlang == u'fr': f2w.write(u'# Export du modèle 3D  \n')
@@ -242,12 +268,12 @@ def writethconfig(pdata, icomments, icoupe, thlang, dictcave,
 	if icomments: 
 		if thlang == u'fr': f2w.write(u'# Export des fichier ESRI  \n')
 		elif thlang == u'en': f2w.write(u"# ESRI's files export  \n")
-	f2w.write(u'export map -proj plan -fmt esri -o Outputs/' + dictcave[3].replace(u' ', u'_') + u' -layout my_layout\n')
+	f2w.write(u'export map -proj plan -fmt esri -o Outputs/' + dictcave[3].replace(u' ', u'_') + u' -layout ' + layout + '\n')
  
 	if icomments: 
 		if thlang == u'fr': f2w.write(u'# Export du fichier kml  \n')
 		elif thlang == u'en': f2w.write(u'# kml export  \n')
-	f2w.write(u'export map -proj plan -fmt kml -o Outputs/' + dictcave[3].replace(u' ', u'_') + u'.kml -layout my_layout\n\n')
+	f2w.write(u'export map -proj plan -fmt kml -o Outputs/' + dictcave[3].replace(u' ', u'_') + u'.kml -layout ' + layout + '\n\n')
 
 	if icomments: 
 		if thlang == u'fr': f2w.write(u'# Export des listes  \n')
