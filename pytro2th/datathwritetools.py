@@ -148,7 +148,7 @@ def writecenterlineheader(file, entrance, settings, comments, data, coordsyst, c
 	slopesurv = {u'Clino' : u'clino',
 	             u'Vulc'  : u'clino',
 	             u'Deniv' : u'depthchange',
-	             u'Prof'  : u'fromdepth todepth'}
+	             u'Prof'  : u'fromdepth todepth'}# if Prof values used in .tro file, convert depth to fromdepth todepth to avoid interleaved lines in .th file
     
     # Begin the centerline
 	file.write(u'\n\tcenterline \n')
@@ -274,7 +274,6 @@ def convertdata(settings, data, stations):
 	dictl = {u'Deca'  : 9,
 	         u'Topof' : 10}
 	
-	# if Prof values used in .tro file, convert depth to depthchange to avoid interleaved lines in .th file
 	dirs = settings[6].rstrip(u'\n\r').split(u',')
 
 	k = dictl[settings[0]]-4
@@ -294,7 +293,7 @@ def convertdata(settings, data, stations):
 			if elems[2] == u'*':
 				elems[2] = stations[elems[0]]["TopoF"]
 
-		#depth to depth case
+		# if Prof values used in .tro file, convert depth to fromdepth todepth to avoid interleaved lines in .th file
 		if u'Prof' in settings :
 			prof0 = 0.0
 			if elems[0] in stations.keys() and "prof" in stations[elems[0]].keys():
