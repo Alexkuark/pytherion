@@ -34,9 +34,9 @@ from __future__ import  division
 #from __future__ import unicode_literals
 
 # Import modules
-import sys, os, copy, datetime
-import numpy as np
+import sys, os, copy
 import re
+from datetime import datetime
 from unidecode import unidecode
 from pyproj import Proj, transform
 
@@ -188,22 +188,37 @@ def writecenterlineheader(file, entrance, settings, comments, data, coordsyst, c
 	# next line used to debug
 	#file.write(u'\t' + str(settings) + u'\n')
 	# write the survey caracteristics
-	file.write(u'\t\t#date YYYY.MM.DD \n')
-	if icomments:
-			if thlang == u'fr':
-				file.write(u'\t\t# Si date est utilisé, commenter la ligne "declination", '
-				           u'la date sera utilisée pour la calculer\n')
-			elif thlang == u'en':
-				file.write(u'\t\t# If date is used, comment the ligne "declination", '
-				           u'the date will be use to compute it\n')
+	
+	#date of survey
+	if (len(settings) > 9 and type(settings[9]) is type(datetime.now())):
+		file.write(u'\t\tdate %s \n' % settings[9].strftime("%Y.%m.%d"))
+		if icomments:
+				if thlang == u'fr':
+					file.write(u'\t\t#La date sera utilisée pour calculer la déclinaison\n')
+				elif thlang == u'en':
+					file.write(u'\t\t#The date will be use to compute declination\n')
+
+		file.write(u'\t\t#declination %s %s \n'% (str([string for string in settings[:9] if '.' in string][0]), angleU[settings[2]]))
+
+	else:
+		file.write(u'\t\t#date YYYY.MM.DD \n')
+		if icomments:
+				if thlang == u'fr':
+					file.write(u'\t\t# Si date est utilisé, commenter la ligne "declination", '
+							   u'la date sera utilisée pour la calculer\n')
+				elif thlang == u'en':
+					file.write(u'\t\t# If date is used, comment the ligne "declination", '
+							   u'the date will be use to compute it\n')
+
+		file.write(u'\t\tdeclination %s %s \n'% (str([string for string in settings if '.' in string][0]), angleU[settings[2]]))
+		
 #	file.write(u'\t\tdeclination %s %s \n'% (str(settings[-2]), angleU[settings[2]]))
 #	file.write(u'\t\t\tteam "G.S. Vulcain" \n')
 #	file.write(u'\t\t\tteam "%s" \n' % club)
 #	file.write(u'\t\t#explo-date YYYY.MM.DD \n')
 #	file.write(u'\t\t\texplo-team "G.S. Vulcain" \n')
 #	file.write(u'\t\t\texplo-team "%s" \n' % club)
-	
-	file.write(u'\t\tdeclination %s %s \n'% (str([string for string in settings if '.' in string][0]), angleU[settings[2]]))
+
 	if club != None:
 		if ' ' in club:
 			file.write(u'\t\t#team "%s" \n' % club)
@@ -419,11 +434,11 @@ def write_thtot(file, cavename = u'cave', icomments = True, thlang = 'en'):
 
 	if icomments:
 		if thlang == u'fr':
-			file.write(u'# Copyright (C) %s Xavier Robert <xavier.robert***@***ird.fr>\n' %(str(datetime.datetime.now().year)))
+			file.write(u'# Copyright (C) %s Xavier Robert <xavier.robert***@***ird.fr>\n' %(str(datetime.now().year)))
 			file.write(u'# Ce travaille est sous la licence Creative Commons Attribution-ShareAlike-NonCommecial :\n')
 			file.write(u'#	<http://creativecommons.org/licenses/by-nc-sa/4.0/>\n\n') 
 	elif thlang == u'en':
-			file.write(u'# Copyright (C) %s Xavier Robert <xavier.robert***@***ird.fr>\n' %(str(datetime.datetime.now().year)))
+			file.write(u'# Copyright (C) %s Xavier Robert <xavier.robert***@***ird.fr>\n' %(str(datetime.now().year)))
 			file.write(u'# This work is under the Creative Commons Attribution-ShareAlike-NonCommecial License:\n')
 			file.write(u'#	<http://creativecommons.org/licenses/by-nc-sa/4.0/>\n\n') 
  
@@ -527,11 +542,11 @@ def write_thmaps(file, cavename = u'cave', icomments = True, thlang = 'en'):
 
 	if icomments:
 		if thlang == u'fr':
-			file.write(u'# Copyright (C) %s Xavier Robert <xavier.robert***@***ird.fr>\n' %(str(datetime.datetime.now().year)))
+			file.write(u'# Copyright (C) %s Xavier Robert <xavier.robert***@***ird.fr>\n' %(str(datetime.now().year)))
 			file.write(u'# Ce travail est sous la licence Creative Commons Attribution-ShareAlike-NonCommecial :\n')
 			file.write(u'#	<http://creativecommons.org/licenses/by-nc-sa/4.0/>\n\n') 
 	elif thlang == u'en':
-			file.write(u'# Copyright (C) %s Xavier Robert <xavier.robert***@***ird.fr>\n' %(str(datetime.datetime.now().year)))
+			file.write(u'# Copyright (C) %s Xavier Robert <xavier.robert***@***ird.fr>\n' %(str(datetime.now().year)))
 			file.write(u'# This work is under the Creative Commons Attribution-ShareAlike-NonCommecial License:\n')
 			file.write(u'#	<http://creativecommons.org/licenses/by-nc-sa/4.0/>\n\n') 
 
@@ -595,11 +610,11 @@ def write_thcoords(file, cavename = u'cave', coordinates = None, coordsyst = Non
 
 	if icomments:
 		if thlang == u'fr':
-			file.write(u'# Copyright (C) %s Xavier Robert <xavier.robert***@***ird.fr>\n' %(str(datetime.datetime.now().year)))
+			file.write(u'# Copyright (C) %s Xavier Robert <xavier.robert***@***ird.fr>\n' %(str(datetime.now().year)))
 			file.write(u'# Ce travail est sous la licence Creative Commons Attribution-ShareAlike-NonCommecial :\n')
 			file.write(u'#	<http://creativecommons.org/licenses/by-nc-sa/4.0/>\n\n') 
 	elif thlang == u'en':
-			file.write(u'# Copyright (C) %s Xavier Robert <xavier.robert***@***ird.fr>\n' %(str(datetime.datetime.now().year)))
+			file.write(u'# Copyright (C) %s Xavier Robert <xavier.robert***@***ird.fr>\n' %(str(datetime.now().year)))
 			file.write(u'# This work is under the Creative Commons Attribution-ShareAlike-NonCommecial License:\n')
 			file.write(u'#	<http://creativecommons.org/licenses/by-nc-sa/4.0/>\n\n') 
 
