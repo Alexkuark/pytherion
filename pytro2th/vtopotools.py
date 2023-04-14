@@ -31,7 +31,7 @@ from __future__ import  division
 
 # Import modules
 import sys, os
-import numpy as np
+from datetime import datetime
 
 ############################################################################
 def read_vtopo_header(lines):
@@ -141,6 +141,13 @@ def read_settings(line):
 		k = k + 1
 	if 'Prof' in param[:k] or 'Deniv' in param[:k]: 
 		k = k - 1
+	#date of survey
+	if (len(param) > k):
+		try:
+			param[k] = datetime.strptime(param[k], "%d/%m/%Y").strftime("%Y.%m.%d")
+			k = k + 1
+		except ValueError:
+			print(param[k] + u' is not a valid date, date is not set for the survey')
 	settings = param[:k]
 	#commentst = param[k+2:]
 	commentst = param[k:]
