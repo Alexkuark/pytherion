@@ -404,8 +404,8 @@ def convert_tro(fle_tro_fnme, fle_th_fnme = None, cavename = None,
 	fle_tro = open(fle_tro_fnme, mode='rU', encoding='ISO-8859-1')
 	# read the .tro file
 	lines = fle_tro.readlines()
-	# change the encoding
-	lines = convert_text(lines)
+	# change the encoding 
+	#lines = convert_text(lines)#not useful since encoding is set when opening file
 	
 	# read the header
 	coordinates = None
