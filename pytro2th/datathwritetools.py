@@ -227,8 +227,9 @@ def writecenterlineheader(file, entrance, settings, comments, data, coordsyst, c
 		#file.write(u'\t\tcalibrate counter 0 %s \n' % settings[1])
 		file.write(u'\t\tunits counter centimeters \n')
 		# To set the slope
-		if u'Vulc' in settings:
-			file.write(u'\t\tcalibrate clino 1 %s -1\n' % unitclino[settings[4]])
+	# To set the slope
+	if u'Vulc' in settings:
+		file.write(u'\t\tcalibrate clino %s -1\n' % unitclino[settings[4]])
 	if u'Prof' in settings:
 		file.write(u'\t\tunits depth meters \n')
 		typem = u'Prof'
