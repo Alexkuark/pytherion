@@ -144,7 +144,7 @@ def read_settings(line):
 	#date of survey
 	if (len(param) > k):
 		try:
-			param[k] = datetime.strptime(param[k], "%d/%m/%Y").strftime("%Y.%m.%d")
+			param[k] = datetime.strptime(param[k], "%d/%m/%Y")
 			k = k + 1
 		except ValueError:
 			print(param[k] + u' is not a valid date, date is not set for the survey')
