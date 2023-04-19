@@ -191,15 +191,27 @@ def writecenterlineheader(file, entrance, settings, comments, data, coordsyst, c
 	
 	#date of survey
 	if (len(settings) > 9 and type(settings[9]) is type(datetime.now())):
-		file.write(u'\t\tdate %s \n' % settings[9].strftime("%Y.%m.%d"))
-		if icomments:
-				if thlang == u'fr':
-					file.write(u'\t\t#La date sera utilisée pour calculer la déclinaison\n')
-				elif thlang == u'en':
-					file.write(u'\t\t#The date will be use to compute declination\n')
+		if (len(settings) > 10 and settings[10] == u'M'):
+			file.write(u'\t\t#date %s \n' % settings[9].strftime("%Y.%m.%d"))
+			if icomments:
+					if thlang == u'fr':
+						file.write(u'\t\t# Si date est utilisé, commenter la ligne "declination", '
+							   	   u'la date sera utilisée pour la calculer\n')
+					elif thlang == u'en':
+						file.write(u'\t\t# If date is used, comment the ligne "declination", '
+							   	   u'the date will be use to compute it\n')
 
-		file.write(u'\t\t#declination %s %s \n'% (str([string for string in settings[:9] if '.' in string][0]), angleU[settings[2]]))
+			file.write(u'\t\tdeclination %s %s \n'% (str([string for string in settings[:9] if '.' in string][0]), angleU[settings[2]]))
+		else :
+			file.write(u'\t\tdate %s \n' % settings[9].strftime("%Y.%m.%d"))
+			if icomments:
+					if thlang == u'fr':
+						file.write(u'\t\t#La date sera utilisée pour calculer la déclinaison\n')
+					elif thlang == u'en':
+						file.write(u'\t\t#The date will be use to compute declination\n')
 
+			file.write(u'\t\t#declination %s %s \n'% (str([string for string in settings[:9] if '.' in string][0]), angleU[settings[2]]))
+			
 	else:
 		file.write(u'\t\t#date YYYY.MM.DD \n')
 		if icomments:
