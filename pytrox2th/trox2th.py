@@ -51,10 +51,10 @@ import xmltodict
 #		sys.exit("ERROR : Module " + module + " not present. \n\n Please, install it \
 #			      \n\n Edit the source code for more information")
 
-from .buildparam import *
+#from .buildparam import *
 from .vtopotools import *
-from .datathwritetools import *
-from .buildthconfig import *
+#from .datathwritetools import *
+#from .buildthconfig import *
 
 
 def trox2th(fle_trox_fnme = None, fle_th_fnme = None, 
@@ -408,10 +408,11 @@ def convert_trox(fle_trox_fnme, fle_th_fnme = None, cavename = None,
 	trox = xmltodict.parse(fle_trox.read())
 	# change the encoding 
 	#lines = convert_text(lines)#not useful since encoding is set when opening file
-	
+	print([trox[u'VisualTopo'][u'Mesures'][u'Param']])
+	versionfle = trox[u'VisualTopo'][u'Version']
 	# read the header
 	coordinates = None
-	cavename, coordinates, coordsyst, club, entrance, versionfle = read_vtopo_header(trox['VisualTopo']['Cavite'])
+	cavename, coordinates, coordsyst, club, entrance = read_vtopo_header(trox[u'VisualTopo'][u'Cavite'])
 	
 	if cavename is None or cavename == '' or cavename == ' ' or cavename == '0.000':
 		cavename = fle_trox_fnme.replace(u'.trox', u'')
@@ -436,23 +437,20 @@ def convert_trox(fle_trox_fnme, fle_th_fnme = None, cavename = None,
 	writeheader_th(fle_th, cavename, entrance)
 	
 	# initiate variables
-	i = 0
-	iline = []
 	stations = {}
 	
-	# get line numbers of the lines beginning with 'Param'
-	for line in lines:
-		if u'Param' in line: iline.append(i)
-		i+=1
+	#in case there is only one Param object
+	if type(trox[u'VisualTopo'][u'Mesures'][u'Param']) is dict :
+		trox[u'VisualTopo'][u'Mesures'][u'Param'] = [trox[u'VisualTopo'][u'Mesures'][u'Param']]
 	
-	for j in iline:
+	for param in trox[u'VisualTopo'][u'Mesures'][u'Param']:
 		# read the settings of the survey
-		settings, comments = read_settings(lines[j].replace(u'\n', u''))
+		param, comments = read_settings(param)
 		
-		# read the data from the trox file
-		data = read_data(lines, settings, j, iline)
+		# read the data from the trox file, get the end of surveys in .tro, not useful on .trox
+		#data = read_data(lines, settings, j, iline)
 		
-		data, stations = convertdata(settings, data, stations)
+		data, stations = convertdata(param, stations)
 		
 		if len(data) > 0:
 			# write centerline header

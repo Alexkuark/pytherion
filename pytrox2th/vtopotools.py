@@ -47,7 +47,6 @@ def read_vtopo_header(cavite):
 			coordsyst   : Coordinates system to set the entrance coordinates
 			club        : Name of the group that explored the cave
 			entrance    : Entrance of the cave
-			versionfle  : Vtopo version that has been used to produce the vtopofile
 		
 		USAGE:
 			cavename, coordinates, coordsyst, club, entrance, versionfle = read_vtopo_header(lines)
@@ -78,23 +77,37 @@ def read_vtopo_header(cavite):
 	             u'UTM32E' : u'EPSG:23032'
 	             }
 	
-	cavename = ''
-	coordinates = [0.0, 0.0, 0.0]
-	if coordtro in coord_dict and (float(xcoord) != 0.0 or float(ycoord) != 0.0):
-		# Rewrite the coordinate system to be read by Therion
-		# French Lambert system. To find number of your system, see extern/proj4/nad/epsg file in the therion source distribution. You can add you own lines/systems
-		coordsyst = coord_dict[coordtro]
+	if u'Nom' in cavite.keys():
+		cavename = cavite[u'Nom']
 	else:
+		cavename = ''
+	if u'Coordonnees' in cavite.keys():
+		coordinates = [cavite[u'Coordonnees'][u'@X'], cavite[u'Coordonnees'][u'@Y'], cavite[u'Coordonnees'][u'@Z']]
+		if u'@Projection' in cavite[u'Coordonnees'].keys() and cavite[u'Coordonnees'][u'@Projection'] in coord_dict and (float(cavite[u'Coordonnees'][u'@X']) != 0.0 or float(cavite[u'Coordonnees'][u'@Y']) != 0.0):
+			# Rewrite the coordinate system to be read by Therion
+			# French Lambert system. To find number of your system, see extern/proj4/nad/epsg file in the therion source distribution. You can add you own lines/systems
+			coordsyst = coord_dict[cavite[u'Coordonnees'][u'@Projection']]
+		else:
+			coordsyst = None
+	else:
+		coordinates = [0.0, 0.0, 0.0]
 		coordsyst = None
-	club = None
-	entrance = None
+	if u'Club' in cavite.keys():
+		club = cavite[u'Club']
+	else:
+		club = None
+	if u'Entree' in cavite.keys():
+		entrance = cavite[u'Entree']
+	else:
+		entrance = None
+	
 	versionfle = None
 
-	return cavename, coordinates, coordsyst, club, entrance, versionfle
+	return cavename, coordinates, coordsyst, club, entrance
 
 
 ############################################################################	
-def read_settings(line):
+def read_settings(param):
 	"""
 		Function to read the line that define the settings of the survey session : 
 		  intruments, directions, units, calibrations,...
@@ -114,35 +127,20 @@ def read_settings(line):
 		
 		Licence: CCby-nc
 	"""
-	# Question: Do we have to update the code in function of the vtopo version number?
-	param = line[6:].rstrip(u'\n\r').split(u' ')
-	k = 8
-	#k = 6
-	if 'Topof' in param[:k]:
-		k = k + 1
-	if 'Prof' in param[:k] or 'Deniv' in param[:k]: 
-		k = k - 1
+	
+	if u'Commentaire' in param.keys():
+		comments = param[u'Commentaire']
+	
 	#date of survey
-	if (len(param) > k):
+	if u'Date' in param.keys():
 		try:
-			param[k] = datetime.strptime(param[k], "%d/%m/%Y")
-			k = k + 1
+			param[u'Date'] = datetime.strptime(param[u'Date'], "%d/%m/%Y")
+			
 		except ValueError:
-			print(param[k] + u' is not a valid date, date is not set for the survey')
-	settings = param[:k]
-	#commentst = param[k+2:]
-	commentst = param[k:]
-	comments = " ".join(str(elem)  for elem in commentst)
+			print(param[u'Date'] + u' is not a valid date, date is not set for the survey')
+			comments = param[u'Date'] + u' ' + comments
 	
-	if u'Topof' not in settings:             
-		settings [1:1]= u' '
-	if u'Prof' in settings or u'Deniv' in settings:
-		settings[4:4] = u' '
-	
-	#ucomments=comments.decode('us-ascii', errors = 'replace')
-	#print ucomments
-		 
-	return settings, comments#.encode('utf-8', errors = "replace")
+	return param, comments#.encode('utf-8', errors = "replace")
 
 
 ############################################################################

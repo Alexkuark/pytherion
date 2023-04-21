@@ -23,8 +23,8 @@ __all__ = ['vtopotools', 'datathwritetools', 'buildthconfig', 'buildthconfig', '
 
 #from .text import joke
 #from datathwritetools import writeheader_th, writecenterlineheader, writedata
-from .buildparam import *
+#from .buildparam import *
 from .vtopotools import *
 from .datathwritetools import *
-from .buildthconfig import *
+#from .buildthconfig import *
 from .trox2th import *
