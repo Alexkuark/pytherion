@@ -128,19 +128,17 @@ def read_settings(param):
 		Licence: CCby-nc
 	"""
 	
-	if u'Commentaire' in param.keys():
-		comments = param[u'Commentaire']
-	
 	#date of survey
 	if u'Date' in param.keys():
 		try:
-			param[u'Date'] = datetime.strptime(param[u'Date'], "%d/%m/%Y")
+			param[u'@Date'] = datetime.strptime(param[u'@Date'], "%d/%m/%Y")
 			
 		except ValueError:
-			print(param[u'Date'] + u' is not a valid date, date is not set for the survey')
-			comments = param[u'Date'] + u' ' + comments
+			print(param[u'@Date'] + u' is not a valid date, date will not be used for that survey')
+			tabDate = param[u'@Date'].split(u'/')
+			param[u'@Date'] = tabDate[2] + '.' + tabDate[1] + '.' + tabDate[0]
 	
-	return param, comments#.encode('utf-8', errors = "replace")
+	return param
 
 
 ############################################################################

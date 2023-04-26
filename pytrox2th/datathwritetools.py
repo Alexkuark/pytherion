@@ -66,7 +66,7 @@ def writeheader_th(file, cavename, entrance):
 	return
 
 
-def writecenterlineheader(file, entrance, settings, comments, data, coordsyst, coordinates, club,
+def writecenterlineheader(file, entrance, param, coordsyst, coordinates, club,
                           icomments, thlang):
 	"""
 	Function to write the centerline header
@@ -75,10 +75,8 @@ def writecenterlineheader(file, entrance, settings, comments, data, coordsyst, c
 	INPUTS:
 		file        : variable that sets the file.th
 		entrance    : name of the entrance station
-		settings    : List of the settings of this survey section
-		comments    : String that correspond to the end of the string "Line" 
-		              that do not correspond to the settings
-		data        : data from this survey section
+		param	    : List of the settings of this survey section,
+					  Data from this survey section
 		coordsyst   : Coordinates system to set the entrance coordinates
 		coordinates : Entrance coordinates
 		club        : Name of the group that explored the cave
@@ -113,6 +111,7 @@ def writecenterlineheader(file, entrance, settings, comments, data, coordsyst, c
 	           u'Nod' : u''}
 	# unitcounter: set the unit of the counter (for the length)
 	unitcounter = {u'Vulc' : u'centi',
+				   u'Topof' : u'centi',
 	               u'Prof' : u'',
 	               u'Deniv': u''}
 	# unitclino: used to correct the clino if topoVulcain
@@ -178,21 +177,10 @@ def writecenterlineheader(file, entrance, settings, comments, data, coordsyst, c
 		               u'\t\t#fix %s %s %s %s \n\n' % (coordsyst, entrance, coordinates[0], coordinates[1], coordinates[2])) 
 	typem = u'Deca'
 	
-	# Moved that part in read_settings
-#	if u'Topof' not in settings:
-#		settings [1:1]= u' '
-#		typem = u'Topof'
-#	if u'Prof' in settings or u'Deniv' in settings:
-#		settings[4:4] = u' '
-		
-	# next line used to debug
-	#file.write(u'\t' + str(settings) + u'\n')
-	# write the survey caracteristics
-	
 	#date of survey
-	if (len(settings) > 9 and type(settings[9]) is type(datetime.now())):
-		if (len(settings) > 10 and settings[10] == u'M'):
-			file.write(u'\t\t#date %s \n' % settings[9].strftime("%Y.%m.%d"))
+	if (u'@Date' in param.keys() and type(param[u'@Date']) is type(datetime.now())):
+		if (u'@DeclinAuto' in param.keys() and param[u'@DeclinAuto'] == u'M'):
+			file.write(u'\t\t#date %s \n' % param[u'@Date'].strftime("%Y.%m.%d"))
 			if icomments:
 					if thlang == u'fr':
 						file.write(u'\t\t# Si date est utilisé, commenter la ligne "declination", '
@@ -200,20 +188,24 @@ def writecenterlineheader(file, entrance, settings, comments, data, coordsyst, c
 					elif thlang == u'en':
 						file.write(u'\t\t# If date is used, comment the ligne "declination", '
 							   	   u'the date will be use to compute it\n')
-
-			file.write(u'\t\tdeclination %s %s \n'% (str([string for string in settings[:9] if '.' in string][0]), angleU[settings[2]]))
+			
+			file.write(u'\t\t# Declination set in VisualTopo\n')
+			file.write(u'\t\tdeclination %s %s \n'% (str(param[u'@Declin']), angleU[param[u'@UnitDir']]))
 		else :
-			file.write(u'\t\tdate %s \n' % settings[9].strftime("%Y.%m.%d"))
+			file.write(u'\t\tdate %s \n' % param[u'@Date'].strftime("%Y.%m.%d"))
 			if icomments:
 					if thlang == u'fr':
 						file.write(u'\t\t#La date sera utilisée pour calculer la déclinaison\n')
 					elif thlang == u'en':
 						file.write(u'\t\t#The date will be use to compute declination\n')
 
-			file.write(u'\t\t#declination %s %s \n'% (str([string for string in settings[:9] if '.' in string][0]), angleU[settings[2]]))
+			file.write(u'\t\t#declination %s %s \n'% (str(param[u'@Declin']), angleU[param[u'@UnitDir']]))
 
 	else:
-		file.write(u'\t\t#date YYYY.MM.DD \n')
+		if u'@Date' in param.keys():
+			file.write(u'\t\t#date ' + param[u'@Date'] + ' #is not a valid date YYYY.MM.DD \n')
+		else:
+			file.write(u'\t\t#date YYYY.MM.DD #no date set \n')
 		if icomments:
 				if thlang == u'fr':
 					file.write(u'\t\t# Si date est utilisé, commenter la ligne "declination", '
@@ -222,7 +214,7 @@ def writecenterlineheader(file, entrance, settings, comments, data, coordsyst, c
 					file.write(u'\t\t# If date is used, comment the ligne "declination", '
 							   u'the date will be use to compute it\n')
 
-		file.write(u'\t\tdeclination %s %s \n'% (str([string for string in settings if '.' in string][0]), angleU[settings[2]]))
+		file.write(u'\t\tdeclination %s %s \n'% (str(param[u'@Declin']), angleU[param[u'@UnitDir']]))
 	
 #	file.write(u'\t\tdeclination %s %s \n'% (str(settings[-2]), angleU[settings[2]]))
 #	file.write(u'\t\t\tteam "G.S. Vulcain" \n')
@@ -246,16 +238,17 @@ def writecenterlineheader(file, entrance, settings, comments, data, coordsyst, c
 		if thlang == u'en': file.write(u'\t\t# (to be completed, add many lines as you need) \n')
 		elif thlang == u'fr': file.write(u'\t\t# (peut être complété en ajoutant le nombre de lignes nécessaires) \n')
 	
-	dirs = settings[6].rstrip(u'\n\r').split(u',')
+	#dirs = settings[6].rstrip(u'\n\r').split(u',')
 	
 	file.write(u'\n\t\tunits length meters \n')
-	if u'Topof' in settings:
+	if param[u'@InstrDist'] == u'Topof':
 		#file.write(u'\t\tunits counter %smeters \n' % unitcounter[settings[3]])
 		#file.write(u'\t\tcalibrate counter 0 %s \n' % settings[1])
 		file.write(u'\t\tunits counter centimeters \n')
+		file.write(u'\t\tcalibrate counter 0 %s \n' % param[u'@Etal'])
 	# To set the slope
 	if u'Vulc' in settings:
-		file.write(u'\t\tcalibrate clino %s -1\n' % unitclino[settings[4]])
+		file.write(u'\t\tcalibrate clino %s -1\n' % unitclino[param[u'@UnitPte']])
 	if u'Prof' in settings:
 		file.write(u'\t\tunits depth meters \n')
 		typem = u'Prof'
@@ -263,16 +256,16 @@ def writecenterlineheader(file, entrance, settings, comments, data, coordsyst, c
 		file.write(u'\t\tunits depth meters \n')
 		typem = u'Diving'
 	
-	file.write(u'\t\tunits compass %s \n' % (angleU[settings[2]]))
+	file.write(u'\t\tunits compass %s \n' % (angleU[param[u'@UnitDir']]))
 	if u'Vulc' in settings or 'Clino' in settings:
-		file.write(u'\t\tunits clino %s \n' % (angleU[settings[4]]))
+		file.write(u'\t\tunits clino %s \n' % (angleU[param[u'@UnitPte']]))
 	
 	file.write(u'\n\t\tdata %s %s %s %scompass %s%s %s\n' 
-	           % (style[typem], station[u'vtopo'], lensurv[settings[0]], 
-	              dir[dirs[0]], dir[dirs[1]], slopesurv[settings[3]],
-	              lruddir[dirs[2]]))
-	if comments != u'':
-		file.write(u'\t\t\t#' + comments + u'\n')
+	           % (style[typem], station[u'vtopo'], lensurv[param[u'@InstrDist']], 
+	              dir[param[u'@SensDir']], dir[param[u'@SensPte']], slopesurv[param[u'@InstrPte']],
+	              lruddir[param[u'@SensLar']]))
+	if u'Commentaire' in param.keys():
+		file.write(u'\t\t\t#' + param[u'Commentaire'] + u'\n')
 	
 	return
 
@@ -304,72 +297,74 @@ def convertdata(param, stations):
 	
 	for elems in param[u'Visee']:
 		# remove the '*', and replace them with the right data !
-		if u'Dep' not in elems.keys(): elems[u'Dep'] = list(stations.keys())[-1] 
-		if u'Arr' not in elems.keys(): elems[u'Arr'] = u'-'
+		if u'@Dep' not in elems.keys(): elems[u'@Dep'] = list(stations.keys())[-1] 
+		if u'@Arr' not in elems.keys(): elems[u'@Arr'] = u'-'
 		else:
-			if elems[u'Arr'] in stations.keys(): del stations[elems[u'Arr']]
-			stations[elems[u'Arr']] = {
+			if elems[u'@Arr'] in stations.keys(): del stations[elems[u'@Arr']]
+			stations[elems[u'@Arr']] = {
 				"depart": False
 			}
-		if param[u'InstrDist'] == u'Topof' :
-			stations[elems[u'Arr']][u'TopoF'] = elems[u'ArrTop']
-			if elems[u'DepTop'] == u'*':
-				elems[u'DepTop'] = stations[elems[u'Dep']]["TopoF"]
+		if param[u'@InstrDist'] == u'Topof' :
+			stations[elems[u'@Arr']][u'TopoF'] = elems[u'@ArrTop']
+			if elems[u'@DepTop'] == u'*':
+				elems[u'@DepTop'] = stations[elems[u'@Dep']]["TopoF"]
 
 		# if Prof values used in .trox file, convert depth to fromdepth todepth to avoid interleaved lines in .th file
-		if param[u'InstrPte'] == u'Prof':
+		if param[u'@InstrPte'] == u'Prof':
 			prof0 = 0.0
-			if elems[u'Dep'] in stations.keys() and u'Prof' in stations[elems[u'Dep']].keys():
-				prof0 = stations[elems[u'Dep']][u'Prof']
-			if elems[u'Arr'] == u'-':
-				elems[u'Pte'] = str(prof0) + ' ' + str(float(elems[u'Pte']))
+			if elems[u'@Dep'] in stations.keys() and u'Prof' in stations[elems[u'@Dep']].keys():
+				prof0 = stations[elems[u'@Dep']][u'Prof']
+			if elems[u'@Arr'] == u'-':
+				elems[u'@Pte'] = str(prof0) + ' ' + str(float(elems[u'@Pte']))
 			else:
-				stations[elems[u'Arr']][u'Prof'] = float(elems[u'Pte'])
-				elems[u'Pte'] = str(prof0) + ' ' + str(stations[elems[u'Arr']][u'Prof'])
+				stations[elems[u'@Arr']][u'Prof'] = float(elems[u'@Pte'])
+				elems[u'@Pte'] = str(prof0) + ' ' + str(stations[elems[u'@Arr']][u'Prof'])
 
-		elif param[u'InstrPte'] == u'Deniv' and param[u'SensPte'] == u'Inv': 
+		elif param[u'@InstrPte'] == u'Deniv' and param[u'@SensPte'] == u'Inv': 
 		
-			elems[u'Pte'] = str(-float(elems[u'Pte']))
+			elems[u'@Pte'] = str(-float(elems[u'@Pte']))
 
 		#GDHB : LRUD
 		if elems[u'Arr'] != u'-':
-			if (u'G' not in elems.keys() or elems[u'G'] == u'0.00') and (u'D' not in elems.keys() or elems[u'D'] == u'0.00') and (u'H' not in elems.keys() or elems[u'H'] == u'0.00') and (u'B' not in elems.keys() or elems[u'B'] == u'0.00'):
-				elems[u'G'] = u'0.5'
-				elems[u'D'] = u'0.5'
-				elems[u'H'] = u'0.5'
-				elems[u'B'] = u'0.5'
+			if (u'@G' not in elems.keys() or elems[u'@G'] == u'0.00') and (u'@D' not in elems.keys() or elems[u'@D'] == u'0.00') and (u'@H' not in elems.keys() or elems[u'@H'] == u'0.00') and (u'@B' not in elems.keys() or elems[u'@B'] == u'0.00'):
+				if u'@G' not in elems.keys(): elems[u'@G'] = u'0.5'
+				if u'@D' not in elems.keys(): elems[u'@D'] = u'0.5'
+				if u'@H' not in elems.keys(): elems[u'@H'] = u'0.5'
+				if u'@B' not in elems.keys(): elems[u'@B'] = u'0.5'
 				
-			for LRUD in [u'G',u'D',u'H',u'B'] :
+			for LRUD in [u'@G',u'@D',u'@H',u'@B'] :
 				
-				if param[u'DimPt'] = u'Dep' :
-					stations[elems[u'Dep']][LRUD] = elems[LRUD]
-					if elems[u'Arr'] in stations.keys():
-						elems[LRUD] = '[' + elems[LRUD] + ' ' + stations[elems[u'Arr']][LRUD] + ']'
+				if param[u'@DimPt'] == u'Dep' :
+					stations[elems[u'@Dep']][LRUD] = elems[LRUD]
+					if elems[u'@Arr'] in stations.keys() and LRUD in stations[elems[u'@Arr']].keys():
+						elems[LRUD] = '[' + elems[LRUD] + ' ' + stations[elems[u'@Arr']][LRUD] + ']'
 					else :
-						
+						#set LRUD to 0.5 if not defined on previous lines in the file for the station at visee end
+						#rewrite to get LRUD if defined later in file
+						elems[LRUD] = '[' + elems[LRUD] + ' 0.5]'
 				else:
-					stations[elems[u'Arr']][LRUD] = elems[LRUD]
-					if elems[u'Dep'] in stations.keys() and stations[elems[u'Dep']]["depart"]:
-						elems[LRUD] = '[' + stations[elems[u'Dep']][LRUD] + ' ' + elems[LRUD] + ']'
+					stations[elems[u'@Arr']][LRUD] = elems[LRUD]
+					if elems[u'@Dep'] in stations.keys() and stations[elems[u'@Dep']]["depart"]:
+						elems[LRUD] = '[' + stations[elems[u'@Dep']][LRUD] + ' ' + elems[LRUD] + ']'
 		else:
 			
-			for LRUD in [u'G',u'D',u'H',u'B'] :
+			for LRUD in [u'@G',u'@D',u'@H',u'@B'] :
 				# Check that LRUD == '*'
 				if LRUD in elems.keys():
 					# If LRUD is known
-					if elems[u'Dep'] in stations.keys(): elems[LRUD] = stations[elems[u'Dep']][LRUD]
+					if elems[u'@Dep'] in stations.keys(): elems[LRUD] = stations[elems[u'@Dep']][LRUD]
 					#elif "LRUD" in stations[elems[1]].keys() : elems[k+j] = stations[elems[1]]["LRUD"][j]
 					#Else, change them to 0
 					else: elems[LRUD] = u'0.0'	
 
-			if 	elems[u'Dep'] == elems[u'Arr'] :
-				stations[elems[u'Arr']]["depart"] = True
-				# remove duplicates of entrance station used by visualtopo for LRUD purpose
-				del elems[:]
+		if 	elems[u'@Dep'] == elems[u'@Arr'] :
+			stations[elems[u'@Arr']]["depart"] = True
+			# remove duplicates of entrance station used by visualtopo for LRUD purpose
+			del elems[:]
 
 	return param, stations
 	
-def writedata(file, settings, data):
+def writedata(file, param):
 	"""
 	function to write the data in the .th file
 	
@@ -394,7 +389,8 @@ def writedata(file, settings, data):
 	dictl = {u'Deca'  : 9,
 	         u'Topof' : 10}
 
-	for i, elems in enumerate(data):
+	for elems in param[u'Visee']:
+		"""
 		# Check if option 'E'
 		if u'E' in elems:
 			file.write(u'\t\t\tflags duplicate \n')
@@ -415,6 +411,17 @@ def writedata(file, settings, data):
 			file.write(u'\t\t\textend reverse \n')
 		if u'E' in elems:
 			file.write(u'\t\t\tflags not duplicate \n')	
+		"""
+		if param[u'@InstrDist'] == u'Topof' :
+			visee = u'\t\t\t' + u'\t'.join(elems[u'@Dep'], elems[u'@Arr'], elems[u'@DepTop'], elems[u'@ArrTop'], elems[u'@Long'], elems[u'@Az'], elems[u'@Pte'], elems[u'@G'], elems[u'@D'], elems[u'@H'], elems[u'@B'])
+		else :
+			visee = u'\t\t\t' + u'\t'.join(elems[u'@Dep'], elems[u'@Arr'], elems[u'@Long'], elems[u'@Az'], elems[u'@Pte'], elems[u'@G'], elems[u'@D'], elems[u'@H'], elems[u'@B'])
+		
+		if u'Commentaire' in elems.keys():
+			comment = u'\t# ' + elems[u'Commentaire']
+		else:
+			comment = ''
+		file.write(u'\t\t\t' + visee + comment)
 				
 	return
 	

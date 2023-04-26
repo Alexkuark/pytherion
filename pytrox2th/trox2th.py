@@ -445,7 +445,7 @@ def convert_trox(fle_trox_fnme, fle_th_fnme = None, cavename = None,
 	
 	for param in trox[u'VisualTopo'][u'Mesures'][u'Param']:
 		# read the settings of the survey
-		param, comments = read_settings(param)
+		param = read_settings(param)
 		
 		# read the data from the trox file, get the end of surveys in .tro, not useful on .trox
 		#data = read_data(lines, settings, j, iline)
@@ -454,11 +454,11 @@ def convert_trox(fle_trox_fnme, fle_th_fnme = None, cavename = None,
 		
 		if len(data) > 0:
 			# write centerline header
-			writecenterlineheader(fle_th, entrance, settings, comments, data, coordsyst, coordinates, club,
+			writecenterlineheader(fle_th, entrance, param, coordsyst, coordinates, club,
 					      icomments, thlang)
 
 			# write the data to the .th file
-			writedata(fle_th, settings, data)
+			writedata(fle_th, param)
 
 			# write the end of the centerline in the .th file
 			fle_th.write(u'\n\tendcenterline\n\n')
