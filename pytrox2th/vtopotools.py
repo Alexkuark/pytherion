@@ -129,14 +129,13 @@ def read_settings(param):
 	"""
 	
 	#date of survey
-	if u'Date' in param.keys():
+	if u'@Date' in param.keys():
 		try:
 			param[u'@Date'] = datetime.strptime(param[u'@Date'], "%d/%m/%Y")
 			
 		except ValueError:
 			print(param[u'@Date'] + u' is not a valid date, date will not be used for that survey')
-			tabDate = param[u'@Date'].split(u'/')
-			param[u'@Date'] = tabDate[2] + '.' + tabDate[1] + '.' + tabDate[0]
+			param[u'@Date'] = u'.'.join(reversed(param[u'@Date'].split(u'/')))
 	
 	return param
 

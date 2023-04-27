@@ -153,7 +153,7 @@ def writecenterlineheader(file, entrance, param, coordsyst, coordinates, club,
 	file.write(u'\n\tcenterline \n')
 	
 	# if entrance in the data, write the entrance coordinates
-	if [datal for datal in data if entrance in datal] != []:
+	if u'entrance' in param.keys() and param[u'entrance'] == entrance:
 		if icomments:
 			if thlang == u'fr':
 				file.write(u'\t\t# Si le systeme de coordonnées n\'est pas le système' 
@@ -182,23 +182,23 @@ def writecenterlineheader(file, entrance, param, coordsyst, coordinates, club,
 		if (u'@DeclinAuto' in param.keys() and param[u'@DeclinAuto'] == u'M'):
 			file.write(u'\t\t#date %s \n' % param[u'@Date'].strftime("%Y.%m.%d"))
 			if icomments:
-					if thlang == u'fr':
-						file.write(u'\t\t# Si date est utilisé, commenter la ligne "declination", '
-							   	   u'la date sera utilisée pour la calculer\n')
-					elif thlang == u'en':
-						file.write(u'\t\t# If date is used, comment the ligne "declination", '
-							   	   u'the date will be use to compute it\n')
-			
-			file.write(u'\t\t# Declination set in VisualTopo\n')
+				if thlang == u'fr':
+					file.write(u'\t\t# Si date est utilisé, commenter la ligne "declination", '
+							   u'la date sera utilisée pour la calculer\n')
+					file.write(u'\t\t# Declinaison définie dans VisualTopo\n')
+				elif thlang == u'en':
+					file.write(u'\t\t# If date is used, comment the ligne "declination", '
+							   u'the date will be use to compute it\n')
+					file.write(u'\t\t# Declination set in VisualTopo\n')
 			file.write(u'\t\tdeclination %s %s \n'% (str(param[u'@Declin']), angleU[param[u'@UnitDir']]))
+
 		else :
 			file.write(u'\t\tdate %s \n' % param[u'@Date'].strftime("%Y.%m.%d"))
 			if icomments:
-					if thlang == u'fr':
-						file.write(u'\t\t#La date sera utilisée pour calculer la déclinaison\n')
-					elif thlang == u'en':
-						file.write(u'\t\t#The date will be use to compute declination\n')
-
+				if thlang == u'fr':
+					file.write(u'\t\t#La date sera utilisée pour calculer la déclinaison\n')
+				elif thlang == u'en':
+					file.write(u'\t\t#The date will be use to compute declination\n')
 			file.write(u'\t\t#declination %s %s \n'% (str(param[u'@Declin']), angleU[param[u'@UnitDir']]))
 
 	else:
@@ -247,17 +247,17 @@ def writecenterlineheader(file, entrance, param, coordsyst, coordinates, club,
 		file.write(u'\t\tunits counter centimeters \n')
 		file.write(u'\t\tcalibrate counter 0 %s \n' % param[u'@Etal'])
 	# To set the slope
-	if u'Vulc' in settings:
+	if param[u'@InstrPte'] == u'Vulc':
 		file.write(u'\t\tcalibrate clino %s -1\n' % unitclino[param[u'@UnitPte']])
-	if u'Prof' in settings:
+	if param[u'@InstrPte'] == u'Prof':
 		file.write(u'\t\tunits depth meters \n')
 		typem = u'Prof'
-	elif u'Deniv' in settings:
+	elif param[u'@InstrPte'] == u'Deniv':
 		file.write(u'\t\tunits depth meters \n')
 		typem = u'Diving'
 	
 	file.write(u'\t\tunits compass %s \n' % (angleU[param[u'@UnitDir']]))
-	if u'Vulc' in settings or 'Clino' in settings:
+	if param[u'@InstrPte'] == u'Vulc' or param[u'@InstrPte'] == 'Clino':
 		file.write(u'\t\tunits clino %s \n' % (angleU[param[u'@UnitPte']]))
 	
 	file.write(u'\n\t\tdata %s %s %s %scompass %s%s %s\n' 
@@ -270,7 +270,7 @@ def writecenterlineheader(file, entrance, param, coordsyst, coordinates, club,
 	return
 
 
-def convertdata(param, stations):
+def convertdata(param, stations, entrance):
 	"""
 	function to convert the data from the .trox file to the .th file
 	
@@ -298,12 +298,15 @@ def convertdata(param, stations):
 	for elems in param[u'Visee']:
 		# remove the '*', and replace them with the right data !
 		if u'@Dep' not in elems.keys(): elems[u'@Dep'] = list(stations.keys())[-1] 
+		elif elems[u'@Dep'] == entrance: param[u'entrance'] = entrance
 		if u'@Arr' not in elems.keys(): elems[u'@Arr'] = u'-'
 		else:
 			if elems[u'@Arr'] in stations.keys(): del stations[elems[u'@Arr']]
+			elif elems[u'@Arr'] == entrance: param[u'entrance'] = entrance
 			stations[elems[u'@Arr']] = {
 				"depart": False
 			}
+			
 		if param[u'@InstrDist'] == u'Topof' :
 			stations[elems[u'@Arr']][u'TopoF'] = elems[u'@ArrTop']
 			if elems[u'@DepTop'] == u'*':
@@ -325,16 +328,19 @@ def convertdata(param, stations):
 			elems[u'@Pte'] = str(-float(elems[u'@Pte']))
 
 		#GDHB : LRUD
-		if elems[u'Arr'] != u'-':
-			if (u'@G' not in elems.keys() or elems[u'@G'] == u'0.00') and (u'@D' not in elems.keys() or elems[u'@D'] == u'0.00') and (u'@H' not in elems.keys() or elems[u'@H'] == u'0.00') and (u'@B' not in elems.keys() or elems[u'@B'] == u'0.00'):
-				if u'@G' not in elems.keys(): elems[u'@G'] = u'0.5'
-				if u'@D' not in elems.keys(): elems[u'@D'] = u'0.5'
-				if u'@H' not in elems.keys(): elems[u'@H'] = u'0.5'
-				if u'@B' not in elems.keys(): elems[u'@B'] = u'0.5'
+		if (u'@G' not in elems.keys() or elems[u'@G'] == u'0.00') and (u'@D' not in elems.keys() or elems[u'@D'] == u'0.00') and (u'@H' not in elems.keys() or elems[u'@H'] == u'0.00') and (u'@B' not in elems.keys() or elems[u'@B'] == u'0.00'):
+			if u'@G' not in elems.keys(): elems[u'@G'] = u'0.5'
+			if u'@D' not in elems.keys(): elems[u'@D'] = u'0.5'
+			if u'@H' not in elems.keys(): elems[u'@H'] = u'0.5'
+			if u'@B' not in elems.keys(): elems[u'@B'] = u'0.5'
+				
+		if elems[u'@Arr'] != u'-':
 				
 			for LRUD in [u'@G',u'@D',u'@H',u'@B'] :
 				
 				if param[u'@DimPt'] == u'Dep' :
+					if elems[u'@Dep'] not in stations.keys():
+						stations[elems[u'@Dep']]={}
 					stations[elems[u'@Dep']][LRUD] = elems[LRUD]
 					if elems[u'@Arr'] in stations.keys() and LRUD in stations[elems[u'@Arr']].keys():
 						elems[LRUD] = '[' + elems[LRUD] + ' ' + stations[elems[u'@Arr']][LRUD] + ']'
@@ -350,7 +356,7 @@ def convertdata(param, stations):
 			
 			for LRUD in [u'@G',u'@D',u'@H',u'@B'] :
 				# Check that LRUD == '*'
-				if LRUD in elems.keys():
+				if LRUD not in elems.keys():
 					# If LRUD is known
 					if elems[u'@Dep'] in stations.keys(): elems[LRUD] = stations[elems[u'@Dep']][LRUD]
 					#elif "LRUD" in stations[elems[1]].keys() : elems[k+j] = stations[elems[1]]["LRUD"][j]
@@ -360,7 +366,7 @@ def convertdata(param, stations):
 		if 	elems[u'@Dep'] == elems[u'@Arr'] :
 			stations[elems[u'@Arr']]["depart"] = True
 			# remove duplicates of entrance station used by visualtopo for LRUD purpose
-			del elems[:]
+			elems[u'@Dep'] = u'#'
 
 	return param, stations
 	
@@ -412,16 +418,19 @@ def writedata(file, param):
 		if u'E' in elems:
 			file.write(u'\t\t\tflags not duplicate \n')	
 		"""
-		if param[u'@InstrDist'] == u'Topof' :
-			visee = u'\t\t\t' + u'\t'.join(elems[u'@Dep'], elems[u'@Arr'], elems[u'@DepTop'], elems[u'@ArrTop'], elems[u'@Long'], elems[u'@Az'], elems[u'@Pte'], elems[u'@G'], elems[u'@D'], elems[u'@H'], elems[u'@B'])
-		else :
-			visee = u'\t\t\t' + u'\t'.join(elems[u'@Dep'], elems[u'@Arr'], elems[u'@Long'], elems[u'@Az'], elems[u'@Pte'], elems[u'@G'], elems[u'@D'], elems[u'@H'], elems[u'@B'])
 		
-		if u'Commentaire' in elems.keys():
-			comment = u'\t# ' + elems[u'Commentaire']
-		else:
-			comment = ''
-		file.write(u'\t\t\t' + visee + comment)
+		if len(elems) > 0:
+			print(elems)
+			if param[u'@InstrDist'] == u'Topof' :
+				visee = u'\t'.join([elems[u'@Dep'], elems[u'@Arr'], elems[u'@DepTop'], elems[u'@ArrTop'], elems[u'@Long'], elems[u'@Az'], elems[u'@Pte'], elems[u'@G'], elems[u'@D'], elems[u'@H'], elems[u'@B']])
+			else :
+				visee = u'\t'.join([elems[u'@Dep'], elems[u'@Arr'], elems[u'@Long'], elems[u'@Az'], elems[u'@Pte'], elems[u'@G'], elems[u'@D'], elems[u'@H'], elems[u'@B']])
+
+			if u'Commentaire' in elems.keys():
+				comment = u'\t# ' + elems[u'Commentaire']
+			else:
+				comment = ''
+			file.write(u'\t\t\t' + visee + comment + u'\n')
 				
 	return
 	

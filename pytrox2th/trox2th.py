@@ -53,8 +53,8 @@ import xmltodict
 
 #from .buildparam import *
 from .vtopotools import *
-#from .datathwritetools import *
-#from .buildthconfig import *
+from .datathwritetools import *
+from .buildthconfig import *
 
 
 def trox2th(fle_trox_fnme = None, fle_th_fnme = None, 
@@ -408,7 +408,7 @@ def convert_trox(fle_trox_fnme, fle_th_fnme = None, cavename = None,
 	trox = xmltodict.parse(fle_trox.read())
 	# change the encoding 
 	#lines = convert_text(lines)#not useful since encoding is set when opening file
-	print([trox[u'VisualTopo'][u'Mesures'][u'Param']])
+
 	versionfle = trox[u'VisualTopo'][u'Version']
 	# read the header
 	coordinates = None
@@ -450,9 +450,9 @@ def convert_trox(fle_trox_fnme, fle_th_fnme = None, cavename = None,
 		# read the data from the trox file, get the end of surveys in .tro, not useful on .trox
 		#data = read_data(lines, settings, j, iline)
 		
-		data, stations = convertdata(param, stations)
+		param, stations = convertdata(param, stations, entrance)
 		
-		if len(data) > 0:
+		if len(param[u'Visee']) > 0:
 			# write centerline header
 			writecenterlineheader(fle_th, entrance, param, coordsyst, coordinates, club,
 					      icomments, thlang)
