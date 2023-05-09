@@ -27,7 +27,7 @@ if (len(sys.argv) > 1 and isfile(sys.argv[1])):
         #print('\n\t\tProcessing : '+thconf+'\n')
         #subprocess.run(['therion', thconf])
 
-    elif f[-5:] == '.trox':
+    elif sys.argv[1][-5:] == '.trox':
         print('\n\t\tProcessing : '+sys.argv[1]+'\n')
         th, thconf = trox2th (fle_trox_fnme = sys.argv[1])
                 
