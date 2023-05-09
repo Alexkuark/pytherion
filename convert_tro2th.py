@@ -20,7 +20,7 @@ from os.path import isfile, isdir
 
 if (len(sys.argv) > 1 and isfile(sys.argv[1])):
 
-    if f[-4:] == '.tro':
+    if sys.argv[1][-4:] == '.tro':
         print('\n\t\tProcessing : '+sys.argv[1]+'\n')
         th, thconf = tro2th (fle_tro_fnme = sys.argv[1])
                 
