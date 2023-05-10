@@ -411,7 +411,7 @@ def convert_tro(fle_tro_fnme, fle_th_fnme = None, cavename = None,
 	coordinates = None
 	cavename, coordinates, coordsyst, club, entrance, versionfle = read_vtopo_header(lines)
 	
-	if cavename is None or cavename == '' or cavename == ' ' or cavename == '0.000':
+	if cavename is None or cavename == '' or cavename == ' ' or cavename == '*' or cavename == '0.000':
 		cavename = fle_tro_fnme.replace(u'.tro', u'')
 	
 	if fle_th_fnme is None:
