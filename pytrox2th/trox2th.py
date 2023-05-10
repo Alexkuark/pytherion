@@ -414,7 +414,7 @@ def convert_trox(fle_trox_fnme, fle_th_fnme = None, cavename = None,
 	coordinates = None
 	cavename, coordinates, coordsyst, club, entrance = read_vtopo_header(trox[u'VisualTopo'][u'Cavite'])
 	
-	if cavename is None or cavename == '' or cavename == ' ' or cavename == '0.000':
+	if cavename is None or cavename == '' or cavename == ' ' or cavename == '*' or cavename == '0.000':
 		cavename = fle_trox_fnme.replace(u'.trox', u'')
 	
 	if fle_th_fnme is None:
