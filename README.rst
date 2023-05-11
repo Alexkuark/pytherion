@@ -5,12 +5,6 @@ This module is designed for cavers who need to convert cave's surveys from the V
 to the Therion software. It provides functions to read Visual Topo files (*.tro) and to write Therion files
 (*.th, *.thconfig and config.thc)
 
-WARNINGS
---------
-
-This code crashes because of a problem of encoding reading when used with Visual Topo files which contain accentuated characters !!!
-For the moment, I did not manage to solve that problem...
-
 Install
 -------
 
@@ -22,17 +16,32 @@ Usage
 
 Inside a (i)python environnement:
 
-To import the module:
+To import the modules:
 	>>> from pytro2th import tro2th
+	>>> from pytrox2th import trox2th
 	
 To create only a generic thconfig file with a config file:
-    >>> tro2th()
+        >>> tro2th()
 
 To convert a cave.tro file:
 	>>> tro2th(fle_tro_fnme = 'cave.tro')
+To convert a cave.trox file:
+	>>> trox2th(fle_trox_fnme = 'cave.trox')
 
 To build only a thonfig file, in english, without any comments and without extended elevation layout
 	>>> tro2th(thlang = 'en', cavename = 'Test', icomments = False, icoupe = False, ithconfig = False, thconfigfnme = None, ithc = False, thcpath = my/path/to/my/confg/file, thcfnme = 'config.thc', sourcefiles = ['Test.th', 'Test.th2'], xviscale = 1000, xvigrid = 10, scale = 500,Errorfiles = True)
+	
+Inside a terminal :
+
+To convert all .tro an .trox files in current directory
+	$ python3 pytherion/convert_tro2th.py
+
+To convert all .tro an .trox files in a directory
+	$ python3 pytherion/convert_tro2th.py directoryPath
+	
+To convert a .tro or a .trox files
+	$ python3 pytherion/convert_tro2th.py cave.tro
+	$ python3 pytherion/convert_tro2th.py cave.trox
 
 Options/inputs
 --------------
