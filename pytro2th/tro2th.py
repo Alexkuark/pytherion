@@ -168,8 +168,8 @@ def tro2th(fle_tro_fnme = None, fle_th_fnme = None,
 			fle_tro_fnme = fle_tro_fnme + u'.tro'
 		# check if file exists
 		if os.path.isfile(fle_tro_fnme) == False :
-			if thlang == u'fr': raise NameError(u'ERROR : Le fichier {FileNa} n\'existe pas'.format(FileNa=str(fle_tro_fnme)))
-			elif thlang == u'en': raise NameError(u'ERROR : File {FileNa} does not exist'.format(FileNa=str(fle_tro_fnme)))
+			if thlang == u'fr': raise NameError(u'ERROR : Le fichier %s n\'existe pas' %(str(fle_tro_fnme)))
+			elif thlang == u'en': raise NameError(u'ERROR : File %s does not exist' %(str(fle_tro_fnme)))
 		
 		if fle_th_fnme is None:
 			# convert tro file to th file
@@ -192,7 +192,7 @@ def tro2th(fle_tro_fnme = None, fle_th_fnme = None,
 
 	if sourcefile is None:
 		if fle_th_fnme is None:
-			if cavename is None: cavename = u'cave'
+
 			sourcefile = [cavename.replace(u' ', u'_') + u'.th', 
 			              u'#' + cavename.replace(u' ', u'_') + u'.th2', 
 			              u'#' + cavename.replace(u' ', u'_') + u'-coupe.th2']
@@ -306,7 +306,7 @@ def build_structure(cavename, Errorfiles = True):
 	if os.path.exists(cavename.replace(u' ', u'_')):
 		if Errorfiles:
 			# Stop
-			raise NameError(u'ERROR : Folder {FileNa} does exist'.format(FileNa=str(cavename.replace(u' ', u'_'))))
+			raise NameError(u'ERROR : Folder %s does exist' %(str(cavename.replace(u' ', u'_'))))
 		else:
 			print(u'WARNING: I have erased folder %s' % cavename.replace(u' ', u'_')) 
 			if not os.path.exists(cavename.replace(u' ', u'_') + u'/Data'): os.mkdir(cavename.replace(u' ', u'_') + u'/Data')
@@ -404,15 +404,15 @@ def convert_tro(fle_tro_fnme, fle_th_fnme = None, cavename = None,
 	fle_tro = open(fle_tro_fnme, mode='rU', encoding='ISO-8859-1')
 	# read the .tro file
 	lines = fle_tro.readlines()
-	# change the encoding 
-	#lines = convert_text(lines)#not useful since encoding is set when opening file
+	# change the encoding
+	#lines = convert_text(lines)
 	
 	# read the header
 	coordinates = None
 	cavename, coordinates, coordsyst, club, entrance, versionfle = read_vtopo_header(lines)
 	
 	if cavename is None or cavename == '' or cavename == ' ' or cavename == '*' or cavename == '0.000':
-		cavename = fle_tro_fnme.replace(u'.tro', u'')
+		cavename = os.path.basename(fle_tro_fnme).replace(u'.tro', u'')
 	
 	if fle_th_fnme is None:
 		fle_th_fnme = cavename.replace(u' ', u'_') + u'.th'

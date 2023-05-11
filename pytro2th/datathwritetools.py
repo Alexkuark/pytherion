@@ -148,7 +148,7 @@ def writecenterlineheader(file, entrance, settings, comments, data, coordsyst, c
 	slopesurv = {u'Clino' : u'clino',
 	             u'Vulc'  : u'clino',
 	             u'Deniv' : u'depthchange',
-	             u'Prof'  : u'fromdepth todepth'}# if Prof values used in .tro file, convert depth to fromdepth todepth to avoid interleaved lines in .th file
+	             u'Prof'  : u'fromdepth todepth'}
     
     # Begin the centerline
 	file.write(u'\n\tcenterline \n')
@@ -211,7 +211,7 @@ def writecenterlineheader(file, entrance, settings, comments, data, coordsyst, c
 						file.write(u'\t\t#The date will be use to compute declination\n')
 
 			file.write(u'\t\t#declination %s %s \n'% (str([string for string in settings[:9] if '.' in string][0]), angleU[settings[2]]))
-			
+
 	else:
 		file.write(u'\t\t#date YYYY.MM.DD \n')
 		if icomments:
@@ -223,7 +223,7 @@ def writecenterlineheader(file, entrance, settings, comments, data, coordsyst, c
 							   u'the date will be use to compute it\n')
 
 		file.write(u'\t\tdeclination %s %s \n'% (str([string for string in settings if '.' in string][0]), angleU[settings[2]]))
-		
+	
 #	file.write(u'\t\tdeclination %s %s \n'% (str(settings[-2]), angleU[settings[2]]))
 #	file.write(u'\t\t\tteam "G.S. Vulcain" \n')
 #	file.write(u'\t\t\tteam "%s" \n' % club)
@@ -233,9 +233,9 @@ def writecenterlineheader(file, entrance, settings, comments, data, coordsyst, c
 
 	if club != None:
 		if ' ' in club:
-			file.write(u'\t\t#team "%s" \n' % club)
+			file.write(u'\t\t#team "%s" \n' % unidecode(club))
 		else:
-			file.write(u'\t\tteam "%s" \n' % club)
+			file.write(u'\t\tteam %s \n' % unidecode(club))
 		
 #	therion only accept one name without space in team option
 #	if club != None:
@@ -253,7 +253,6 @@ def writecenterlineheader(file, entrance, settings, comments, data, coordsyst, c
 		#file.write(u'\t\tunits counter %smeters \n' % unitcounter[settings[3]])
 		#file.write(u'\t\tcalibrate counter 0 %s \n' % settings[1])
 		file.write(u'\t\tunits counter centimeters \n')
-		# To set the slope
 	# To set the slope
 	if u'Vulc' in settings:
 		file.write(u'\t\tcalibrate clino %s -1\n' % unitclino[settings[4]])
@@ -301,6 +300,7 @@ def convertdata(settings, data, stations):
 	# dictl = length of the data line
 	dictl = {u'Deca'  : 9,
 	         u'Topof' : 10}
+	
 	
 	dirs = settings[6].rstrip(u'\n\r').split(u',')
 
@@ -516,7 +516,7 @@ def write_thtot(file, cavename = u'cave', icomments = True, thlang = 'en'):
 		file.write(u'input %s-maps.th\n\n' %(cavename.replace(u' ', u'_')))
 	else:
 		file.write(u'#input %s-maps.th\n\n' %(cavename.replace(u' ', u'_')))
-	
+		
 	file.write(u'endsurvey\n')
 
 	return

@@ -33,8 +33,8 @@ from __future__ import  division
 #from __future__ import unicode_literals
 
 # Import modules
-import sys, os, datetime
-import numpy as np
+import sys, os
+from datetime import datetime
 
 ########################
 
@@ -131,7 +131,7 @@ def writethconfig(pdata, icomments, icoupe, thlang, dictcave,
 	
 	f2w.write(u'encoding utf-8 \n\n')
 	f2w.write(u'# File written by pytro2th (OSU OREME)  \n')
-	f2w.write(u'# Copyright (C) %s Xavier Robert <xavier.robert***@***ird.fr>, Philippe Vernant <philippe.vernant***@***umontpellier.fr>, Alexis Guizard <guizard.alexis***@***outlook.com> \n' %(str(datetime.datetime.now().year)))
+	f2w.write(u'# Copyright (C) %s Xavier Robert <xavier.robert***@***ird.fr>, Philippe Vernant <philippe.vernant***@***umontpellier.fr>, Alexis Guizard <guizard.alexis***@***outlook.com> \n' %(str(datetime.now().year)))
 	f2w.write(u'# This work is under the licence Creatice Commonc CC-by-nc-sa v.4 \n\n')
   
   
@@ -156,19 +156,19 @@ def writethconfig(pdata, icomments, icoupe, thlang, dictcave,
 	#for cfile in dictcave[0]:
 	#	f2w.write(u'source ' + cfile + u'\n')
 	#file.write(u'input Data/%s.th\n\n' %(cavename.replace(u' ', u'_')))
-	f2w.write(u'input %s-tot.th\n\n' %(dictcave[3].replace(u' ', u'_')))
+	f2w.write(u'source %s-tot.th\n\n' %(dictcave[3].replace(u' ', u'_')))
 	f2w.write(u'\n')
 	
 	if icomments: 
 		if thlang == u'fr': f2w.write(u'# Appeller le fichier de définition des maps\n')
 		elif thlang == u'en': f2w.write(u'# Call maps definition file\n')
-	f2w.write(u'input %s-maps.th\n\n' %(dictcave[3].replace(u' ', u'_')))
+	f2w.write(u'#source %s-maps.th\n\n' %(dictcave[3].replace(u' ', u'_')))
 	f2w.write(u'\n')
 
 	if icomments: 
 		if thlang == u'fr': f2w.write(u'# Appeller le fichier de coordonnées de la cavité\n')
 		elif thlang == u'en': f2w.write(u'# Call Coordinates definition file\n')
-	f2w.write(u'#input legends/entrances_coordinates.th\n\n')
+	f2w.write(u'#source legends/entrances_coordinates.th\n\n')
 
 
 	if icomments: 
@@ -244,20 +244,20 @@ def writethconfig(pdata, icomments, icoupe, thlang, dictcave,
 	if icomments: 
 		if thlang == u'fr': f2w.write(u'# Export des xvi pour le dessin \n')
 		elif thlang == u'en': f2w.write(u'# xvi exports for drawing purpose \n')
-	f2w.write(u'export map -fmt xvi -layout xviexport -o '+ dictcave[3].replace(u' ', u'_') + u'-map.xvi\n')
-	if icoupe: f2w.write(u'export map -projection extended -fmt xvi -layout xviexport -o '+ dictcave[3].replace(u' ', u'_') + u'-coupe.xvi\n\n')
+	f2w.write(u'export map -fmt xvi -layout xviexport -o Outputs/'+ dictcave[3].replace(u' ', u'_') + u'-map.xvi\n')
+	if icoupe: f2w.write(u'export map -projection extended -fmt xvi -layout xviexport -o Outputs/'+ dictcave[3].replace(u' ', u'_') + u'-coupe.xvi\n\n')
 
 	# select maps
 	if icomments: 
 		if thlang == u'fr': f2w.write(u'# Séléction des maps à exporter  \n')
 		elif thlang == u'en': f2w.write(u'# Select maps to export  \n')
-	f2w.write(u'select MP-'+ dictcave[3].replace(u' ', u'_') + u'#@' + dictcave[3].replace(u' ', u'_') +' \n')
-	if icoupe: f2w.write(u'select MC-'+ dictcave[3].replace(u' ', u'_') + u'#@' + dictcave[3].replace(u' ', u'_') +' \n')
+	f2w.write(u'#select MP-'+ dictcave[3].replace(u' ', u'_') + u'#@' + dictcave[3].replace(u' ', u'_') +' \n')
+	if icoupe: f2w.write(u'#select MC-'+ dictcave[3].replace(u' ', u'_') + u'#@' + dictcave[3].replace(u' ', u'_') +' \n')
 
 	if icomments: 
 		if thlang == u'fr': f2w.write(u'# Export des pdfs  \n')
 		elif thlang == u'en': f2w.write(u'# Pdfs export  \n')
-	if icoupe: f2w.write(u'export map -projection extended -layout ' + layoutcoupe + ' -o '+ dictcave[3].replace(u' ', u'_') + u'-coupe.pdf\n')
+	if icoupe: f2w.write(u'export map -projection extended -layout ' + layoutcoupe + '-coupe -o Outputs/'+ dictcave[3].replace(u' ', u'_') + u'-coupe.pdf\n')
 	f2w.write(u'export map -o Outputs/' + dictcave[3].replace(u' ', u'_') + u'-plan.pdf -layout ' + layout + '\n')
 	
 	if icomments: 
@@ -285,7 +285,7 @@ def writethconfig(pdata, icomments, icoupe, thlang, dictcave,
 	
 	f2w.closed
 	
-	print(u'\tFile ' + pdata + u' written...')
+	print(u'\n\tFile ' + pdata + u' written...')
 	
 	return
 

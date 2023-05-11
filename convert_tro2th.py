@@ -4,9 +4,9 @@
 from pytro2th import tro2th
 from pytrox2th import trox2th
 import subprocess
-import sys
-from os import listdir
-from os.path import isfile, isdir
+import sys, os
+#from os import listdir
+#from os.path import isfile, isdir
 
 # find the first .tro file and process it
 #tro_file = [f for f in listdir() if (isfile(f) and f[-4:] == '.tro')]
@@ -18,36 +18,57 @@ from os.path import isfile, isdir
 #print('\n\t\tProcessing : '+thconfig_file[0]+'\n')
 #subprocess.run(['therion', thconfig_file[0]])
 
-if (len(sys.argv) > 1 and isfile(sys.argv[1])):
+f = open("/var/www/git_oreme_data/cache/karst3d/test_file",'w')
+f.write("start\n")
+f.write(os.getcwd() + "\n")
+
+if (len(sys.argv) > 1 and os.path.isfile(sys.argv[1])):
+	
+    f.write("arg found\n")
+    f.write(sys.argv[1] + "\n")
+
+    directory = os.path.dirname(sys.argv[1])
+    if os.path.isdir(directory):
+        os.chdir(directory)
+
+        f.write("directory found\n")
+        f.write(os.getcwd() + "\n")
 
     if sys.argv[1][-4:] == '.tro':
         print('\n\t\tProcessing : '+sys.argv[1]+'\n')
-        th, thconf = tro2th (fle_tro_fnme = sys.argv[1])
-                
-        #print('\n\t\tProcessing : '+thconf+'\n')
-        #subprocess.run(['therion', thconf])
+        th, thconf = tro2th (fle_tro_fnme = os.path.basename(sys.argv[1]))
+
+        print('\n\t\tProcessing : '+thconf+'\n')
+        subprocess.run(['therion', thconf])
 
     elif sys.argv[1][-5:] == '.trox':
         print('\n\t\tProcessing : '+sys.argv[1]+'\n')
-        th, thconf = trox2th (fle_trox_fnme = sys.argv[1])
-                
-        #print('\n\t\tProcessing : '+thconf+'\n')
-        #subprocess.run(['therion', thconf])
+        th, thconf = trox2th (fle_trox_fnme = os.path.basename(sys.argv[1]))
+
+        print('\n\t\tProcessing : '+thconf+'\n')
+        subprocess.run(['therion', thconf])
+
+    f.write("file created\n")
+    f.write(th)
+    f.close
 
 else:
 
-    for f in listdir():
-        if isfile(f):
+    if (len(sys.argv) > 1 and os.path.isdir(sys.argv[1])):
+        os.chdir(sys.argv[1])
+
+    for f in os.listdir():
+        if os.isfile(f):
             if f[-4:] == '.tro':
                 print('\n\t\tProcessing : '+f+'\n')
                 th, thconf = tro2th (fle_tro_fnme = f)
-                
-                #print('\n\t\tProcessing : '+thconf+'\n')
-                #subprocess.run(['therion', thconf])
+
+                print('\n\t\tProcessing : '+thconf+'\n')
+                subprocess.run(['therion', thconf])
 
             elif f[-5:] == '.trox':
                 print('\n\t\tProcessing : '+f+'\n')
                 th, thconf = trox2th (fle_trox_fnme = f)
-                
-                #print('\n\t\tProcessing : '+thconf+'\n')
-                #subprocess.run(['therion', thconf])
+
+                print('\n\t\tProcessing : '+thconf+'\n')
+                subprocess.run(['therion', thconf])

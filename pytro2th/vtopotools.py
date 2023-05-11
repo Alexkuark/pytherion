@@ -77,7 +77,7 @@ def read_vtopo_header(lines):
 	             u'UTM31E' : u'EPSG:23031',
 	             u'UTM32E' : u'EPSG:23032'
 	             }
-	
+	             
 	cavename = ''
 	coordinates = [0.0, 0.0, 0.0]
 	coordsyst = None
@@ -99,16 +99,16 @@ def read_vtopo_header(lines):
 				coordsyst = coord_dict[coordtro]
 			else:
 				coordsyst = None
-			
+				
 		# read club
 #		if u'Club' in line: club = line[5:].replace(u'\n', u'')
 		if u'Club' in line: 
 			if len(line[5:].replace(u'\n', u'').split(u' ')) < 3 : club = line[5:].replace(u'\n', u'')
 			else: club = line[5:].replace(u'\n', u'').replace(u' ', u'-')
-				
+			
 		# read entrance name
 		if u'Entree' in line : entrance = line[7:].replace(u'\n', u'')
-
+	
 	return cavename, coordinates, coordsyst, club, entrance, versionfle
 
 

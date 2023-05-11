@@ -420,7 +420,7 @@ def writedata(file, param):
 		"""
 		
 		if len(elems) > 0:
-			print(elems)
+
 			if param[u'@InstrDist'] == u'Topof' :
 				visee = u'\t'.join([elems[u'@Dep'], elems[u'@Arr'], elems[u'@DepTop'], elems[u'@ArrTop'], elems[u'@Long'], elems[u'@Az'], elems[u'@Pte'], elems[u'@G'], elems[u'@D'], elems[u'@H'], elems[u'@B']])
 			else :
