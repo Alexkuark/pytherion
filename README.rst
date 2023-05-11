@@ -41,6 +41,7 @@ To convert all .tro an .trox files in a directory
 	
 To convert a .tro or a .trox file
 	$ python3 pytherion/convert_tro2th.py cave.tro
+	
 	$ python3 pytherion/convert_tro2th.py cave.trox
 
 Options/inputs
