@@ -26,14 +26,14 @@ if (len(sys.argv) > 1 and os.path.isfile(sys.argv[1])):
 
     if sys.argv[1][-4:] == '.tro':
         print('\n\t\tProcessing : '+sys.argv[1]+'\n')
-        th, thconf = tro2th (fle_tro_fnme = os.path.basename(sys.argv[1]))
+        nom, th, thconf = tro2th (fle_tro_fnme = os.path.basename(sys.argv[1]))
 
         print('\n\t\tProcessing : '+thconf+'\n')
         subprocess.run(['therion', thconf])
 
     elif sys.argv[1][-5:] == '.trox':
         print('\n\t\tProcessing : '+sys.argv[1]+'\n')
-        th, thconf = trox2th (fle_trox_fnme = os.path.basename(sys.argv[1]))
+        nom, th, thconf = trox2th (fle_trox_fnme = os.path.basename(sys.argv[1]))
 
         print('\n\t\tProcessing : '+thconf+'\n')
         subprocess.run(['therion', thconf])
