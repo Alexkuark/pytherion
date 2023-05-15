@@ -271,7 +271,7 @@ def trox2th(fle_trox_fnme = None, fle_th_fnme = None,
 	print(u'____________________________________________________________')
 	print(u'')
 	
-	return fle_th_fnme, thconfigfnme
+	return cavename, fle_th_fnme, thconfigfnme
 
 
 def build_structure(cavename, Errorfiles = True):
