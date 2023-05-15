@@ -18,21 +18,11 @@ import sys, os
 #print('\n\t\tProcessing : '+thconfig_file[0]+'\n')
 #subprocess.run(['therion', thconfig_file[0]])
 
-f = open("/var/www/git_oreme_data/cache/karst3d/test_file",'w')
-f.write("start\n")
-f.write(os.getcwd() + "\n")
-
 if (len(sys.argv) > 1 and os.path.isfile(sys.argv[1])):
-	
-    f.write("arg found\n")
-    f.write(sys.argv[1] + "\n")
 
     directory = os.path.dirname(sys.argv[1])
     if os.path.isdir(directory):
         os.chdir(directory)
-
-        f.write("directory found\n")
-        f.write(os.getcwd() + "\n")
 
     if sys.argv[1][-4:] == '.tro':
         print('\n\t\tProcessing : '+sys.argv[1]+'\n')
@@ -47,10 +37,6 @@ if (len(sys.argv) > 1 and os.path.isfile(sys.argv[1])):
 
         print('\n\t\tProcessing : '+thconf+'\n')
         subprocess.run(['therion', thconf])
-
-    f.write("file created\n")
-    f.write(th)
-    f.close
 
 else:
 
