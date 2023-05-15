@@ -174,12 +174,14 @@ def trox2th(fle_trox_fnme = None, fle_th_fnme = None,
 		
 		if fle_th_fnme is None:
 			# convert trox file to th file
-			print('1')
+			if thlang == u'fr': print(u'\tPas de nom fichier .th en entrée, le fichier sera nommé avec le nom de la cavité')
+			elif thlang == u'en': print(u'\tNo .th File name input, the Therion file name will be the cave name')
 			cavename, coordinates, coordsyst, fle_th_fnme = convert_trox(fle_trox_fnme, 
 			                                              icomments = icomments, icoupe = icoupe, istructure = istructure, 
 			                                              thlang = thlang, Errorfiles = Errorfiles)
 		else:
-			print(2)
+			if thlang == u'fr': print(u'\tLe fichier Therion sera nommé comme indiqué en paramètre %s ' %(fle_th_fnme))
+			elif thlang == u'en': print(u'\tTherion File will be name as set in parameter %s ' %(fle_th_fnme))
 			cavename, coordinates, coordsyst, fle_th_fnme = convert_trox(fle_trox_fnme, fle_th_fnme, cavename,
 			                                               icomments = icomments, icoupe = icoupe, istructure = istructure,
 			                                               thlang = thlang, Errorfiles = Errorfiles)
