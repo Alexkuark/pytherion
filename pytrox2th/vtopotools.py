@@ -32,6 +32,7 @@ from __future__ import  division
 # Import modules
 import sys, os
 from datetime import datetime
+from pyproj import Proj, transform
 
 ############################################################################
 def read_vtopo_header(cavite):
@@ -82,13 +83,18 @@ def read_vtopo_header(cavite):
 	else:
 		cavename = ''
 	if u'Coordonnees' in cavite.keys():
-		coordinates = [cavite[u'Coordonnees'][u'@X'], cavite[u'Coordonnees'][u'@Y'], cavite[u'Coordonnees'][u'@Z']]
+		
 		if u'@Projection' in cavite[u'Coordonnees'].keys() and cavite[u'Coordonnees'][u'@Projection'] in coord_dict and (float(cavite[u'Coordonnees'][u'@X']) != 0.0 or float(cavite[u'Coordonnees'][u'@Y']) != 0.0):
 			# Rewrite the coordinate system to be read by Therion
-			# French Lambert system. To find number of your system, see extern/proj4/nad/epsg file in the therion source distribution. You can add you own lines/systems
 			coordsyst = coord_dict[cavite[u'Coordonnees'][u'@Projection']]
+			inProj = Proj(coordsyst)
+			coordsyst = 'epsg:3857'
+			outProj = Proj(coordsyst)
+			latc, longc = transform(inProj, outProj, float(cavite[u'Coordonnees'][u'@X'])*1000, float(cavite[u'Coordonnees'][u'@Y'])*1000)
+			coordinates = [latc, longc, alt]
 		else:
 			coordsyst = None
+			coordinates = [float(cavite[u'Coordonnees'][u'@X'])*1000, float(cavite[u'Coordonnees'][u'@Y'])*1000, cavite[u'Coordonnees'][u'@Z']]
 	else:
 		coordinates = [0.0, 0.0, 0.0]
 		coordsyst = None
