@@ -607,7 +607,7 @@ def write_thcoords(file, cavename = u'cave', coordinates = None, coordsyst = Non
 		if coordsyst:
 			# Transform Lambert coordinates into Lat Long coordinates
 			inProj = Proj(coordsyst)
-			outProj = Proj('epsg:3857')
+			outProj = Proj('epsg:4326')
 			latc, longc = transform(inProj, outProj, float(coordinates[0]), float(coordinates[1]))
 		else:
 			latc = str(coordinates[1]) + u'(Check coord. syst.)'

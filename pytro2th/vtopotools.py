@@ -32,6 +32,7 @@ from __future__ import  division
 # Import modules
 import sys, os
 from datetime import datetime
+from pyproj import Proj, transform
 
 ############################################################################
 def read_vtopo_header(lines):
@@ -91,14 +92,18 @@ def read_vtopo_header(lines):
 		if u'Trou' in line[0:4]:
 			# read Trou
 			(cavename, xcoord, ycoord, alt, coordtro) = line[5:].replace(u'\n', u'').rstrip(u'\n\r').split(u',')
-			coordinates = [xcoord, ycoord, alt]
-			
+						
 			if coordtro in coord_dict and (float(xcoord) != 0.0 or float(ycoord) != 0.0):
 				# Rewrite the coordinate system to be read by Therion
-				# French Lambert system. To find number of your system, see extern/proj4/nad/epsg file in the therion source distribution. You can add you own lines/systems
 				coordsyst = coord_dict[coordtro]
+				inProj = Proj(coordsyst)
+				coordsyst = 'epsg:3857'
+				outProj = Proj(coordsyst)
+				latc, longc = transform(inProj, outProj, float(xcoord)*1000, float(ycoord)*1000)
+				coordinates = [latc, longc, alt]
 			else:
 				coordsyst = None
+				coordinates = [float(xcoord)*1000, float(ycoord)*1000, alt]
 				
 		# read club
 #		if u'Club' in line: club = line[5:].replace(u'\n', u'')
