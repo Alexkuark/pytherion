@@ -273,7 +273,7 @@ def writethconfig(pdata, icomments, icoupe, thlang, dictcave,
 	if icomments: 
 		if thlang == u'fr': f2w.write(u'# Export du fichier kml  \n')
 		elif thlang == u'en': f2w.write(u'# kml export  \n')
-	f2w.write(u'export map -proj plan -fmt kml -o Outputs/' + dictcave[3].replace(u' ', u'_') + u'.kml -layout ' + layout + '\n\n')
+	f2w.write(u'export model -fmt kml -o Outputs/' + dictcave[3].replace(u' ', u'_') + u'.kml \n\n')
 
 	if icomments: 
 		if thlang == u'fr': f2w.write(u'# Export des listes  \n')
