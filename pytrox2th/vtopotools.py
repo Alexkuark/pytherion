@@ -87,11 +87,12 @@ def read_vtopo_header(cavite):
 		if u'@Projection' in cavite[u'Coordonnees'].keys() and cavite[u'Coordonnees'][u'@Projection'] in coord_dict and (float(cavite[u'Coordonnees'][u'@X']) != 0.0 or float(cavite[u'Coordonnees'][u'@Y']) != 0.0):
 			# Rewrite the coordinate system to be read by Therion
 			coordsyst = coord_dict[cavite[u'Coordonnees'][u'@Projection']]
-			inProj = Proj(coordsyst)
-			coordsyst = 'epsg:3857'
-			outProj = Proj(coordsyst)
-			latc, longc = transform(inProj, outProj, float(cavite[u'Coordonnees'][u'@X'])*1000, float(cavite[u'Coordonnees'][u'@Y'])*1000)
-			coordinates = [latc, longc, alt]
+			#inProj = Proj(coordsyst)
+			#coordsyst = 'epsg:3857'
+			#outProj = Proj(coordsyst)
+			#latc, longc = transform(inProj, outProj, float(cavite[u'Coordonnees'][u'@X'])*1000, float(cavite[u'Coordonnees'][u'@Y'])*1000)
+			#coordinates = [latc, longc, alt]
+			coordinates = [float(cavite[u'Coordonnees'][u'@X'])*1000, float(cavite[u'Coordonnees'][u'@Y'])*1000, cavite[u'Coordonnees'][u'@Z']]
 		else:
 			coordsyst = None
 			coordinates = [float(cavite[u'Coordonnees'][u'@X'])*1000, float(cavite[u'Coordonnees'][u'@Y'])*1000, cavite[u'Coordonnees'][u'@Z']]
