@@ -253,12 +253,6 @@ def writethconfig(pdata, icomments, icoupe, thlang, dictcave,
 		elif thlang == u'en': f2w.write(u'# Select maps to export  \n')
 	f2w.write(u'#select MP-'+ dictcave[3].replace(u' ', u'_') + u'#@' + dictcave[3].replace(u' ', u'_') +' \n')
 	if icoupe: f2w.write(u'#select MC-'+ dictcave[3].replace(u' ', u'_') + u'#@' + dictcave[3].replace(u' ', u'_') +' \n')
-
-	if icomments: 
-		if thlang == u'fr': f2w.write(u'# Export des pdfs  \n')
-		elif thlang == u'en': f2w.write(u'# Pdfs export  \n')
-	if icoupe: f2w.write(u'export map -projection extended -layout ' + layoutcoupe + '-coupe -o Outputs/'+ dictcave[3].replace(u' ', u'_') + u'-coupe.pdf\n')
-	f2w.write(u'export map -o Outputs/' + dictcave[3].replace(u' ', u'_') + u'-plan.pdf -layout ' + layout + '\n')
 	
 	if icomments: 
 		if thlang == u'fr': f2w.write(u'# Export du modèle 3D  \n')
@@ -275,6 +269,12 @@ def writethconfig(pdata, icomments, icoupe, thlang, dictcave,
 		elif thlang == u'en': f2w.write(u'# kml export  \n')
 	f2w.write(u'export model -fmt kml -o Outputs/' + dictcave[3].replace(u' ', u'_') + u'.kml \n\n')
 
+	if icomments: 
+		if thlang == u'fr': f2w.write(u'# Export des pdfs  \n')
+		elif thlang == u'en': f2w.write(u'# Pdfs export  \n')
+	if icoupe: f2w.write(u'export map -projection extended -layout ' + layoutcoupe + '-coupe -o Outputs/'+ dictcave[3].replace(u' ', u'_') + u'-coupe.pdf\n')
+	f2w.write(u'export map -o Outputs/' + dictcave[3].replace(u' ', u'_') + u'-plan.pdf -layout ' + layout + '\n')
+	
 	if icomments: 
 		if thlang == u'fr': f2w.write(u'# Export des listes  \n')
 		elif thlang == u'en': f2w.write(u'# Lists export  \n')
