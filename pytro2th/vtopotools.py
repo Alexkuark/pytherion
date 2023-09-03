@@ -96,11 +96,11 @@ def read_vtopo_header(lines):
 			if coordtro in coord_dict and (float(xcoord) != 0.0 or float(ycoord) != 0.0):
 				# Rewrite the coordinate system to be read by Therion
 				coordsyst = coord_dict[coordtro]
-				#inProj = Proj(coordsyst)
-				#coordsyst = 'epsg:3857'
-				#outProj = Proj(coordsyst)
-				#latc, longc = transform(inProj, outProj, float(xcoord)*1000, float(ycoord)*1000)
-				#coordinates = [latc, longc, alt]
+				inProj = Proj(coordsyst)
+				coordsyst = 'epsg:4326'
+				outProj = Proj(coordsyst)
+				latc, longc = transform(inProj, outProj, float(xcoord)*1000, float(ycoord)*1000)
+				coordinates = [latc, longc, alt]
 				coordinates = [float(xcoord)*1000, float(ycoord)*1000, alt]
 			else:
 				coordsyst = None
